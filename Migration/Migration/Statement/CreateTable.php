@@ -75,4 +75,5 @@
 		public function addColumn ( $type, $name, $traits = null ) {
 			$this->_columns[$name] = new Migration_Column( $name, $type, $traits );
 		}
+
 	}
