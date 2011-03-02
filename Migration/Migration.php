@@ -6,7 +6,7 @@
 
 		protected abstract function up ();
 		protected abstract function down ();
-		
+
 		public function queryUp () {
 			self::$statements = array();
 			$this->up();

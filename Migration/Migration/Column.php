@@ -9,6 +9,7 @@
 		protected $size;
 		protected $default;
 		protected $null;
+		protected $comment;
 
 		protected static $types = array(
 			'string' => array(
@@ -16,6 +17,7 @@
 				'size' => 255,
 				'null' => true,
 				'default' => null,
+				'comment' => null,
 				'traits' => array()
 			),
 			'integer' => array(
@@ -23,6 +25,7 @@
 				'size' => 10,
 				'null' => true,
 				'default' => null,
+				'comment' => null,
 				'traits' => array(
 					'unsigned'       => 'UNSIGNED',
 					'auto_increment' => 'AUTO_INCREMENT',
@@ -36,6 +39,7 @@
 			$this->size    = self::$types[$type]['size'];
 			$this->null    = self::$types[$type]['null'];
 			$this->default = self::$types[$type]['default'];
+			$this->default = self::$types[$type]['comment'];
 
 			$this->traits  = array();
 
@@ -51,6 +55,9 @@
 						case 'default':
 							$this->default = $trait;
 							break;
+						case 'comment':
+							$this->comment = $trait;
+							break;
 						default:
 							$this->traits[$key] = $trait;
 							break;
@@ -64,14 +71,15 @@
 
 			$traits = array();
 
-			if( ! $this->null ) { $traits[] = 'NOT NULL'; }
-			if( ! is_null( $this->default ) ) { $traits[] = "DEFAULT '{$this->default}'"; } //! TODO: Escaping here?
-
 			foreach( $this->traits as $key => $trait ) {
 				if( $trait === true && array_key_exists( $key, self::$types[$this->type]['traits'] ) ) {
 					$traits[] = self::$types[$this->type]['traits'][$key];
 				}
 			}
+
+			if( ! $this->null ) { $traits[] = 'NOT NULL'; }
+			if( ! is_null( $this->default ) ) { $traits[] = "DEFAULT '{$this->default}'"; } //! TODO: Escaping here?
+			if( ! is_null( $this->comment ) ) { $traits[] = "COMMENT '{$this->comment}'"; } //! TODO: Escaping here?
 
 			return $sql . implode( ' ', $traits );
 		}

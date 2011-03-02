@@ -64,6 +64,11 @@
 			$sql .= implode( ",\n\t", $rows );
 
 			$sql .= "\n) ENGINE={$this->_engine} DEFAULT CHARSET={$this->_charset};\n";
+
+			foreach( $this->_indexes as $name => $index ) {
+				$sql .= "\n" . $index->toSQL();
+			}
+
 			return $sql;
 		}
 
@@ -76,4 +81,8 @@
 			$this->_columns[$name] = new Migration_Column( $name, $type, $traits );
 		}
 
+		public function addIndex ( $columns, $traits = null ) {
+			$index = new Migration_Index($this->_tableName, $columns, $traits);
+			$this->_indexes[$index->getName()] = $index;
+		}
 	}
