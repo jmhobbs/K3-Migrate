@@ -32,6 +32,11 @@
 			return self::$statements[count(self::$statements)-1];
 		}
 
+		public static function &ChangeTable ( $name ) {
+			self::$statements[] = new Migration_Statement_ChangeTable( $name );
+			return self::$statements[count(self::$statements)-1];
+		}
+
 		public static function &DropTable ( $name ) {
 			self::$statements[] = new Migration_Statement_DropTable( $name );
 			return self::$statements[count(self::$statements)-1];

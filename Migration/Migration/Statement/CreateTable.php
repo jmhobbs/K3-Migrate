@@ -63,10 +63,10 @@
 
 			$sql .= implode( ",\n\t", $rows );
 
-			$sql .= "\n) ENGINE={$this->_engine} DEFAULT CHARSET={$this->_charset};\n";
+			$sql .= "\n) ENGINE={$this->_engine} DEFAULT CHARSET={$this->_charset};\n\n";
 
 			foreach( $this->_indexes as $name => $index ) {
-				$sql .= "\n" . $index->toSQL();
+				$sql .= $index->toSQL() . "\n";
 			}
 
 			return $sql;
