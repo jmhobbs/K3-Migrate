@@ -1,10 +1,11 @@
 <?php
 
-	class Migration_Manager {
+	class Kohana_Migration_Manager {
 
 		protected $migrations_path = null;
 
 		public function __construct ( $migrations_path ) {
+			if( ! is_dir( $migrations_path ) ) { throw new Kohana_Exception( "Invalid Migrations Path: $migrations_path" ); }
 			$this->migrations_path = $migrations_path;
 		}
 
@@ -31,6 +32,27 @@
 			$classname = self::migrationNameToClassName( $name );
 			$class = new $classname();
 			return $class->queryDown();
+		}
+
+		public function seed () {
+			if( is_file( $this->migrations_path . '/seed.php' ) ) {
+				require_once( $this->migrations_path . '/seed.php');
+			}
+		}
+
+		public function create ( $class_name ) {
+			$name = time() . '_' . self::classNameToMigrationName( $class_name );
+			$class = <<<END
+<?php defined('SYSPATH') or die('No direct script access.');
+
+	class $class_name extends Migration {
+		public function up () {}
+		public function down () {}
+	}
+
+END;
+			file_put_contents( $this->migrations_path . '/' . $name . '.php', $class );
+			return $name . '.php';
 		}
 
 		/**
@@ -70,4 +92,13 @@
 			);
 		}
 
+		/**
+		* Convert a class name to migration name.
+		*
+		* Example: UserMigration => user_migration
+		*/
+		public static function classNameToMigrationName ( $class_name ) {
+			preg_match_all( '/[A-Z][^A-Z]*/', $class_name, $results);
+			return strtolower( implode( '_', $results[0] ) );
+		}
 	}

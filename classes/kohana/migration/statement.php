@@ -1,5 +1,5 @@
 <?php
 
-	abstract class Migration_Statement {
+	abstract class Kohana_Migration_Statement {
 		abstract public function toSQL ();
 	}

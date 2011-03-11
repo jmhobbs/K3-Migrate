@@ -1,6 +1,6 @@
 <?php
 
-	class Migration_Statement_CreateTable extends Migration_Statement {
+	class Kohana_Migration_Statement_CreateTable extends Kohana_Migration_Statement {
 
 		protected $_tableName;
 		protected $_engine;
@@ -78,11 +78,11 @@
 		public function tableName ( $tableName ) { $this->_tableName = $tableName; }
 
 		public function addColumn ( $type, $name, $traits = null ) {
-			$this->_columns[$name] = new Migration_Column( $name, $type, $traits );
+			$this->_columns[$name] = new Kohana_Migration_Column( $name, $type, $traits );
 		}
 
 		public function addIndex ( $columns, $traits = null ) {
-			$index = new Migration_Index($this->_tableName, $columns, $traits);
+			$index = new Kohana_Migration_Index($this->_tableName, $columns, $traits);
 			$this->_indexes[$index->getName()] = $index;
 		}
 	}

@@ -14,7 +14,7 @@
 	*/
 
 
-	class Migration_Index extends Migration_Statement {
+	class Kohana_Migration_Index extends Kohana_Migration_Statement {
 
 		protected $_name;
 		protected $_columns;

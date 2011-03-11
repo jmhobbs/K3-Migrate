@@ -1,6 +1,6 @@
 <?php
 
-	abstract class Migration {
+	abstract class Kohana_Migration {
 
 		protected static $statements = array();
 
@@ -28,17 +28,17 @@
 		}
 
 		public static function &CreateTable ( $name, $args = null ) {
-			self::$statements[] = new Migration_Statement_CreateTable( $name, $args );
+			self::$statements[] = new Kohana_Migration_Statement_CreateTable( $name, $args );
 			return self::$statements[count(self::$statements)-1];
 		}
 
 		public static function &ChangeTable ( $name ) {
-			self::$statements[] = new Migration_Statement_ChangeTable( $name );
+			self::$statements[] = new Kohana_Migration_Statement_ChangeTable( $name );
 			return self::$statements[count(self::$statements)-1];
 		}
 
 		public static function &DropTable ( $name ) {
-			self::$statements[] = new Migration_Statement_DropTable( $name );
+			self::$statements[] = new Kohana_Migration_Statement_DropTable( $name );
 			return self::$statements[count(self::$statements)-1];
 		}
 	}

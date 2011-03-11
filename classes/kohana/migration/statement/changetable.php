@@ -1,6 +1,6 @@
 <?php
 
-	class Migration_Statement_ChangeTable extends Migration_Statement {
+	class Kohana_Migration_Statement_ChangeTable extends Kohana_Migration_Statement {
 
 		protected $_tableName;
 		protected $_engine;
@@ -19,12 +19,12 @@
 		}
 
 		public function addIndex ( $columns, $traits = null ) {
-			$index = new Migration_Index($this->_tableName, $columns, $traits);
+			$index = new Kohana_Migration_Index($this->_tableName, $columns, $traits);
 			$this->_addIndexes[$index->getName()] = $index;
 		}
 
 		public function removeIndexByDefinition( $columns, $traits = null ) {
-			$index = new Migration_Index($this->_tableName, $columns, $traits);
+			$index = new Kohana_Migration_Index($this->_tableName, $columns, $traits);
 			$this->_removeIndexes[] = $index->getName();
 		}
 
@@ -33,7 +33,7 @@
 		}
 
 		public function addColumn ( $type, $name, $traits = null ) {
-			$this->_addColumns[$name] = new Migration_Column( $name, $type, $traits );
+			$this->_addColumns[$name] = new Kohana_Migration_Column( $name, $type, $traits );
 		}
 
 		public function removeColumn ( $name ) {
@@ -42,10 +42,10 @@
 
 		public function alterColumn ( $name, $type, $traits = null, $new_name = null ) {
 			if( is_null( $new_name ) or $name == $new_name ) {
-				$this->_modifyColumns[$name] =  new Migration_Column( $name, $type, $traits );
+				$this->_modifyColumns[$name] =  new Kohana_Migration_Column( $name, $type, $traits );
 			}
 			else {
-				$this->_changeColumns[$name] = new Migration_Column( $new_name, $type, $traits );
+				$this->_changeColumns[$name] = new Kohana_Migration_Column( $new_name, $type, $traits );
 			}
 		}
 

@@ -1,6 +1,6 @@
 <?php
 
-	class Migration_Column {
+	class Kohana_Migration_Column {
 		protected $name;
 		protected $type;
 
