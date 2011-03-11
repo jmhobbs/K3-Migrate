@@ -66,7 +66,7 @@
 			$sql .= "\n) ENGINE={$this->_engine} DEFAULT CHARSET={$this->_charset};\n\n";
 
 			foreach( $this->_indexes as $name => $index ) {
-				$sql .= $index->toSQL() . "\n";
+				$sql .= 'CREATE ' . $index->toSQL() . ";\n";
 			}
 
 			return $sql;

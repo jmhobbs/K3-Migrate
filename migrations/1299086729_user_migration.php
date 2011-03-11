@@ -24,9 +24,21 @@
 				'email',
 				array( 'null' => false )
 			);
+			$table->addColumn(
+				'text',
+				'bio'
+			);
+			$table->addColumn(
+				'timestamp',
+				'created'
+			);
+			$table->addColumn(
+				'float',
+				'number'
+			);
 			$table->addIndex( array( 'email' => array() ), array( 'unique' ) );
 		}
-	
+
 		public function down () {
 			$table = &self::DropTable( 'User' );
 		}

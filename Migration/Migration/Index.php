@@ -73,7 +73,7 @@
 				}
 			}
 
-			$sql = "CREATE $variant INDEX `{$this->_name}` ON `{$this->_table}` (";
+			$sql = "$variant INDEX `{$this->_name}` ON `{$this->_table}` (";
 
 			$keys = array();
 			foreach( $this->_columns as $column => $traits ) {
@@ -91,7 +91,7 @@
 				}
 				$keys[] = trim( $key );
 			}
-			$sql .= implode( ', ', $keys ) . ") $type;";
+			$sql .= implode( ', ', $keys ) . ") $type";
 
 			return $sql;
 		}
