@@ -2,15 +2,15 @@
 
 	class Kohana_Migration_Manager {
 
-		protected $migrations_path = null;
+		protected $config = null;
 
-		public function __construct ( $migrations_path ) {
-			if( ! is_dir( $migrations_path ) ) { throw new Kohana_Exception( "Invalid Migrations Path: $migrations_path" ); }
-			$this->migrations_path = $migrations_path;
+		public function __construct ( $config ) {
+			if( ! is_dir( $config->path ) ) { throw new Kohana_Exception( "Invalid Migrations Path: {$config->path}" ); }
+			$this->config = $config;
 		}
 
 		public function enumerateMigrations () {
-			$files = scandir( $this->migrations_path );
+			$files = scandir( $this->config->path );
 			return array_map(
 				'Migration_Manager::fileNameToMigrationName',
 				array_filter(
@@ -21,22 +21,32 @@
 		}
 
 		public function runMigrationUp ( $name ) {
-			require_once( $this->migrations_path . '/' . $name . '.php');
+			require_once( $this->config->path . '/' . $name . '.php');
 			$classname = self::migrationNameToClassName( $name );
 			$class = new $classname();
-			return $class->queryUp();
+			$this->executeSQL( $class->queryUp() );
 		}
 
 		public function runMigrationDown ( $name ) {
-			require_once( $this->migrations_path . '/' . $name . '.php');
+			require_once( $this->config->path . '/' . $name . '.php');
 			$classname = self::migrationNameToClassName( $name );
 			$class = new $classname();
-			return $class->queryDown();
+			$this->executeSQL( $class->queryDown() );
+		}
+
+		public function executeSQL( $sql ) {
+			$queries = explode( ';', $sql );
+			$db = Database::instance(); // TODO: Named DBs?
+			foreach( $queries as $query ) {
+				$query = trim( $query );
+				if( empty( $query ) ) { continue; }
+				$db->query( Database::UPDATE, $query, false );
+			}
 		}
 
 		public function seed () {
-			if( is_file( $this->migrations_path . '/seed.php' ) ) {
-				require_once( $this->migrations_path . '/seed.php');
+			if( is_file( $this->config->path . '/seed.php' ) ) {
+				require_once( $this->config->path . '/seed.php');
 			}
 		}
 
@@ -50,8 +60,9 @@
 		public function down () {}
 	}
 
+
 END;
-			file_put_contents( $this->migrations_path . '/' . $name . '.php', $class );
+			file_put_contents( $this->config->path . '/' . $name . '.php', $class );
 			return $name . '.php';
 		}
 

@@ -1,11 +1,11 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
-	class Controller_Migration extends Controller {
+	class Controller_Migrate extends Controller {
 
 		public function before () {
 			parent::before();
 			if( ! Kohana::$is_cli ) { throw new Kohana_Exception( "CLI Access Only" ); }
-			$this->runner = new Migration_Manager(Kohana::config('migration')->migrations_path);
+			$this->runner = new Migration_Manager(Kohana::config('migration'));
 		}
 
 		public function action_index () {
@@ -15,7 +15,7 @@
 		public function action_up () {
 			foreach( $this->runner->enumerateMigrations() as $migration ) {
 				print "==[ $migration ]==\n";
-				print $this->runner->runMigrationUp( $migration );
+				$this->runner->runMigrationUp( $migration );
 				print "\n";
 			}
 		}
@@ -23,7 +23,7 @@
 		public function action_down () {
 			foreach( $this->runner->enumerateMigrations() as $migration ) {
 				print "==[ $migration ]==\n";
-				print $this->runner->runMigrationDown( $migration );
+				$this->runner->runMigrationDown( $migration );
 				print "\n";
 			}
 		}
@@ -36,7 +36,7 @@
 			if( null == $class_name ) {
 				throw new Kohana_Exception( "A Class Name Is Required" );
 			}
-			$file_name = $this->runner->create( $class_name ); 
+			$file_name = $this->runner->create( $class_name );
 			print "Created migration `$class_name` in file `" . $file_name . "`\n";
 		}
 	}
