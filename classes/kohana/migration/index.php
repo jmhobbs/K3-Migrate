@@ -22,6 +22,7 @@
 		protected $_traits;
 
 		protected static $variantTraits = array(
+			'index' => '',
 			'unique' => 'UNIQUE',
 			'fulltext' => 'FULLTEXT',
 			'spatial' => 'SPATIAL'
@@ -56,6 +57,10 @@
 				$this->_name = $this->_traits['name'];
 			}
 
+		}
+
+		public static function isType( $type ) {
+			return array_key_exists( $type, self::$variantTraits );
 		}
 
 		public function toSQL () {

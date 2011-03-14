@@ -75,4 +75,46 @@
 			return $sql . implode( ",\n  ", $alters ) . ";\n";
 		}
 
+		// TODO: Merge this with CreateTable
+		public function __set ( $type, $value ) {
+			if( Kohana_Migration_Column::isType($type) ) {
+				if( is_array( $value ) ) {
+					$name = array_shift( $value );
+					$this->addColumn( $type, $name, $value );
+				}
+				else {
+					$this->addColumn( $type, $value );
+				}
+			}
+			else if ( Kohana_Migration_Index::isType($type) ) {
+				if( is_array( $value ) ) {
+					// $t->index = array( array( "column_name", "another_column" ), array( "btree" ) );
+					if( 2 <= count( $value ) ) {
+						$one = reset( $value );
+						$two = next( $value );
+						if( is_array( $one ) and is_array( $two ) ) {
+							$this->addIndex( $one, array_merge( array( $type ), $two ) );
+						}
+						// $t->index = array( "column_name", array( "btree" ) );
+						else if( is_array( $two ) ) {
+							$this->addIndex( array( $one => null ), array_merge( array( $type ), $two ) );
+						}
+						// $t->index = array( "column_name", "another_column", "and_another" );
+						else {
+							$this->addIndex( $value, array( $type ) );
+						}
+					}
+				}
+				// $t->index = "column_name"
+				else {
+					$this->addIndex( array( $value => null), array( $type ) );
+				}
+			}
+		}
+
+		public function __unset ( $name ) {
+			$this->_removeColumns[] = $name;
+		}
+
+
 	}
