@@ -1,1 +1,16 @@
 ## [Migration]()
+- [Creating Migrations](creating_migrations)
+- [Implementing Migrations](implementing_migrations)
+- [Seed Data](seed)
+- Column Types
+- Command Reference
+	- CreateTable
+		- addColumn
+		- addIndex
+	- ChangeTable
+		- addColumn
+		- alterColumn
+		- dropColumn
+		- addIndex
+		- removeIndex
+	- DropTable
