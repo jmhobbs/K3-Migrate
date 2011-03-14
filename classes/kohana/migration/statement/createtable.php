@@ -85,4 +85,19 @@
 			$index = new Kohana_Migration_Index($this->_tableName, $columns, $traits);
 			$this->_indexes[$index->getName()] = $index;
 		}
+
+		public function __set ( $type, $value ) {
+			if( Kohana_Migration_Column::isType($type) ) {
+				if( is_array( $value ) ) {
+					$name = array_shift( $value );
+					$this->addColumn( $type, $name, $value );
+				}
+				else {
+					$this->addColumn( $type, $value );
+				}
+			}
+			// TODO: INDEXES
+			// TODO: CHANGE TABLE TOO
+			// TODO: UNSET AS WELL
+		}
 	}

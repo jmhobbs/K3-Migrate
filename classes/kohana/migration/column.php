@@ -96,6 +96,10 @@
 			),
 		);
 
+		public static function isType ( $name ) {
+			return array_key_exists( $name, self::$types );
+		}
+
 		public function __construct( $name, $type, $traits = null ) {
 			$this->name    = $name;
 			$this->type    = $type;
