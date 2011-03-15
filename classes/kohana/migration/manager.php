@@ -20,6 +20,38 @@
 			);
 		}
 
+		public function getSchemaVersion () {
+			if( ! is_dir( $this->config->path ) )
+				mkdir( $this->config->path );
+
+			$version_file = rtrim( $this->config->path, '/' ) . '/.version';
+
+			if ( file_exists( $version_file ) ) {
+				$fversion = fopen( $version_file,'r' );
+				$version = fread( $fversion, 11 );
+				fclose( $fversion );
+				return $version;
+			}
+
+			return 0;
+		}
+
+		public function setSchemaVersion ( $version ) {
+			if( ! is_dir( $this->config->path ) )
+				mkdir( $this->config->path );
+
+			$version_file = dirname( $this->config->path, '/' ) . '/.version';
+
+			$fversion = fopen( $version_file, 'w' );
+			fwrite( $fversion, $version );
+			fclose( $fversion );
+		}
+
+		public function lastSchemaVersion () {
+			$migrations = $this->enumerateMigrations();
+			return self::migrationNameToVersion( end( $migrations ) );
+		}
+
 		public function runMigrationUp ( $name ) {
 			require_once( $this->config->path . '/' . $name . '.php');
 			$classname = self::migrationNameToClassName( $name );
@@ -111,5 +143,15 @@ END;
 		public static function classNameToMigrationName ( $class_name ) {
 			preg_match_all( '/[A-Z][^A-Z]*/', $class_name, $results);
 			return strtolower( implode( '_', $results[0] ) );
+		}
+
+		/**
+		* Convert a migration (file) name into it's version.
+		*
+		* Example: 1299086729_user_migration => 1299086729
+		*/
+		public static function migrationNameToVersion ( $migration_name ) {
+			$split = explode( '_', $migration_name );
+			return intval( $split[0] );
 		}
 	}

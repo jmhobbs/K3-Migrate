@@ -6,13 +6,29 @@
 			parent::before();
 			if( ! Kohana::$is_cli ) { throw new Kohana_Exception( "CLI Access Only" ); }
 			$this->runner = new Migration_Manager(Kohana::config('migration'));
+			print "\n=============[ K3-Migrate ]============\n\n";
+		}
+
+		public function after () {
+			parent::after();
+			print "\n=======================================\n\n";
 		}
 
 		public function action_index () {
-			print "You have " . count( $this->runner->enumerateMigrations() ) . " total migrations.\n";
+			print " Total Migrations: " . count( $this->runner->enumerateMigrations() ) . "\n\n";
+			$current_version = $this->runner->getSchemaVersion();
+			foreach( $this->runner->enumerateMigrations() as $migration ) {
+				if( $this->runner->migrationNameToVersion( $migration ) == $current_version ) {
+					print " You Are Here =>  ";
+				}
+				else {
+					print "                  ";
+				}
+				print "$migration\n";
+			}
 		}
 
-		public function action_up () {
+		public function action_up ( $target = null ) {
 			foreach( $this->runner->enumerateMigrations() as $migration ) {
 				print "==[ $migration ]==\n";
 				$this->runner->runMigrationUp( $migration );
@@ -20,7 +36,7 @@
 			}
 		}
 
-		public function action_down () {
+		public function action_down ( $target = null ) {
 			foreach( $this->runner->enumerateMigrations() as $migration ) {
 				print "==[ $migration ]==\n";
 				$this->runner->runMigrationDown( $migration );
