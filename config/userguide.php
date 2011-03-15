@@ -1,11 +1,10 @@
-<?php
-
+<?php defined('SYSPATH') or die('No direct access allowed.');
 
 	return array (
 		'modules' => array(
-			'migration' => array(
+			'migrate' => array(
 				'enabled' => TRUE,
-				'name' => 'Migration',
+				'name' => 'Migrate',
 				'description' => 'Database Migrations',
 				'copyright' => '&copy; 2011 John Hobbs',
 			)

@@ -1,5 +1,5 @@
-K3-Migration Module
-==============
+K3-Migrate Module
+=================
 
 A Ko3 Module by [**John Hobbs**](http://twitter.com/jmhobbs) of
 **[Little Filament, Inc.](http://littlefilament.com)**
@@ -20,8 +20,6 @@ Also, be aware that it is totally possible to create SQL statements that just do
 
 Installation
 ------------
-
-K3-Migration is a simple, standard module.
 
 1. Drop the source in your <tt>MODPATH</tt> folder.
 2. Add the module to <tt>Kohana::modules</tt> in your bootstrap.php
