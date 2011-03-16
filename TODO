@@ -1,2 +1,7 @@
 - Qt4 Docs
 - Ko3 Guide
+- Save to schema file
+  + migrate/load
+- Track up/down migrates and "do the right thing"
+- migrate/rollback
+- migrate/drop

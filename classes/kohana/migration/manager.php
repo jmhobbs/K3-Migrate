@@ -52,18 +52,27 @@
 			return self::migrationNameToVersion( end( $migrations ) );
 		}
 
-		public function runMigrationUp ( $name ) {
+		public function getMigrationClass( $name ) {
 			require_once( $this->config->path . '/' . $name . '.php');
 			$classname = self::migrationNameToClassName( $name );
 			$class = new $classname();
-			$this->executeSQL( $class->queryUp() );
+			return $class;
+		}
+
+		public function getMigrationUp( $name ) {
+			return $this->getMigrationClass()->queryUp()
+		}
+
+		public function getMigrationDown( $name ) {
+			return $this->getMigrationClass()->queryDown();
+		}
+
+		public function runMigrationUp ( $name ) {
+			$this->executeSQL( $this->getMigrationUp( $name ) );
 		}
 
 		public function runMigrationDown ( $name ) {
-			require_once( $this->config->path . '/' . $name . '.php');
-			$classname = self::migrationNameToClassName( $name );
-			$class = new $classname();
-			$this->executeSQL( $class->queryDown() );
+			$this->executeSQL( $this->getMigrationDown( $name ) );
 		}
 
 		public function executeSQL( $sql ) {

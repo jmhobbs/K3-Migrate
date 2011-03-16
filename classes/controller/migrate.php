@@ -44,6 +44,18 @@
 			}
 		}
 
+		public function action_print ( $target = null ) {
+			foreach( $this->runner->enumerateMigrations() as $migration ) {
+				print "======[ $migration ]======\n";
+				print "===[ UP ]===\n";
+				print $this->runner->getMigrationUp( $migration );
+				print "\n";
+				print "==[ DOWN ]==\n";
+				print $this->runner->getMigrationDown( $migration );
+				print "\n";
+			}
+		}
+
 		public function action_seed () {
 			$this->runner->seed();
 		}
