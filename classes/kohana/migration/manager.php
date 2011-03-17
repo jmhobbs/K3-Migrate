@@ -60,7 +60,7 @@
 		}
 
 		public function getMigrationUp( $name ) {
-			return $this->getMigrationClass()->queryUp()
+			return $this->getMigrationClass()->queryUp();
 		}
 
 		public function getMigrationDown( $name ) {
