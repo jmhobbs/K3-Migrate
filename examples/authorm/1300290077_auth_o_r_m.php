@@ -13,12 +13,10 @@
 			  UNIQUE KEY `uniq_name` (`name`)
 			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 			*/
-			// TODO Unique Key on name called uniq_name
-			$t = &self::CreateTable( 'roles ');
+			$t = &self::CreateTable( 'roles', array( 'created' => false, 'modified' => false ) );
 			$t->addColumn( 'string', 'name', array( 'size' => 32 ) );
 			$t->addColumn( 'string', 'description' );
-
-
+			$t->addIndex( array( 'name' => array( 'unique' ) ), array( 'unique', 'name' => 'uniq_name' ) );
 
 			/*
 			CREATE TABLE IF NOT EXISTS `roles_users` (
@@ -28,10 +26,12 @@
 			  KEY `fk_role_id` (`role_id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 			*/
-			// TODO: No PK!
-			$t = &self::CreateTable( 'roles_users' )
+			// TODO: THE PK
+			$t = &self::CreateTable( 'roles_users', array( 'id' => false, 'created' => false, 'modified' => false ) );
 			$t->integer = 'user_id';
 			$t->integer = 'role_id';
+			// TODO: Show _set version
+			$t->addIndex( array( 'role_id' => array() ), array( 'name' => 'fk_role_id' ) );
 
 			/*
 			CREATE TABLE IF NOT EXISTS `users` (
