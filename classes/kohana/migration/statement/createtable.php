@@ -99,12 +99,17 @@
 		}
 
 		public function addIndex ( $columns, $traits = null ) {
-			$index = new Kohana_Migration_Index($this->_tableName, $columns, $traits);
+			$index = new Kohana_Migration_Index($columns, $traits);
 			$this->_indexes[$index->getName()] = $index;
 		}
 
 		public function addKey ( $columns, $traits = null ) {
-			$key = new Kohana_Migration_Key($this->_tableName, $columns, $traits);
+			$key = new Kohana_Migration_Key($columns, $traits);
+			$this->_keys[$key->getName()] = $key;
+		}
+
+		public function addForeignKey ( $near_columns, $far_table, $far_columns, $traits = null ) {
+			$key = new Kohana_Migration_Key_Foreign($near_columns, $far_table, $far_columns, $traits);
 			$this->_keys[$key->getName()] = $key;
 		}
 

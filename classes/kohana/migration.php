@@ -37,6 +37,10 @@
 			return self::$statements[count(self::$statements)-1];
 		}
 
+		public static function &AlterTable ( $name ) {
+			return self::ChangeTable( $name );
+		}
+
 		public static function &DropTable ( $name ) {
 			self::$statements[] = new Kohana_Migration_Statement_DropTable( $name );
 			return self::$statements[count(self::$statements)-1];

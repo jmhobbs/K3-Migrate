@@ -7,3 +7,10 @@
 - migrate/drop
 
 - Keys
+
+
+// THOUGHTS?
+
+$table->addKey( 'name' )
+      ->addColumn( 'id' )
+			->setType( 'HASH' );

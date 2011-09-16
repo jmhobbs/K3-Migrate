@@ -77,18 +77,24 @@
 			$t->addKey( array( 'token' => array() ), array( 'name' => 'uniq_token', 'type' => 'unique') );
 			$t->addKey( array( 'user_id' => array() ), array( 'name' => 'fk_user_id' ) );
 
+
+
 			/*
 			ALTER TABLE `roles_users`
 			  ADD CONSTRAINT `roles_users_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
 			  ADD CONSTRAINT `roles_users_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 			*/
-			// TODO
+			// TODO: Constraint name vs. index name?
+			$t = &self::AlterTable( 'roles_users' );
+			$t->addForeignKey( array( 'user_id' ), 'users', array( 'id' ), array( 'delete' => 'cascade', 'name' => 'roles_users_ibfk_1' ) );
+			$t->addForeignKey( array( 'role_id' ), 'roles', array( 'id' ), array( 'delete' => 'cascade', 'name' => 'roles_users_ibfk_2' ) );
 
 			/*
 			ALTER TABLE `user_tokens`
 			  ADD CONSTRAINT `user_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 			*/
-			// TODO
+			$t = &self::AlterTable( 'user_tokens' );
+			$t->addForeignKey( array( 'user_id' ), 'users', array( 'id' ), array( 'delete' => 'cascade', 'name' => 'user_tokens_ibfk_1' ) );
 		}
 		public function down () {
 			// TODO

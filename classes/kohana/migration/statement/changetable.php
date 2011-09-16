@@ -12,19 +12,44 @@
 		// Modify == Change Definition
 		protected $_modifyColumns = array();
 		protected $_addIndexes = array();
+		protected $_addKeys = array();
 		protected $_removeIndexes = array();
 
 		public function __construct( $tableName ) {
 			$this->_tableName = $tableName;
 		}
 
+		public function addKey ( $columns, $traits = null ) {
+			$key = new Kohana_Migration_Key($columns, $traits);
+			$this->_addKeys[$key->getName()] = $key;
+		}
+
+		public function removeKey ( $name ) {
+			$this->_removeKeys[] = $name;
+		}
+
+		public function removeKeyByDefinition( $columns, $traits = null ) {
+			$key = new Kohana_Migration_Key($columns, $traits);
+			$this->_removeKeys[] = $key->getName();
+		}
+
+		public function addForeignKey ( $near_columns, $far_table, $far_columns, $traits = null ) {
+			$key = new Kohana_Migration_Key_Foreign($near_columns, $far_table, $far_columns, $traits);
+			$this->_addKeys[$key->getName()] = $key;
+		}
+
+		public function removeForeignKeyByDefinition ( $near_columns, $far_table, $far_columns, $traits = null ) {
+			$key = new Kohana_Migration_Key_Foreign($near_columns, $far_table, $far_columns, $traits);
+			$this->_removeKeys[] = $key->getName();
+		}
+
 		public function addIndex ( $columns, $traits = null ) {
-			$index = new Kohana_Migration_Index($this->_tableName, $columns, $traits);
+			$index = new Kohana_Migration_Index($columns, $traits);
 			$this->_addIndexes[$index->getName()] = $index;
 		}
 
 		public function removeIndexByDefinition( $columns, $traits = null ) {
-			$index = new Kohana_Migration_Index($this->_tableName, $columns, $traits);
+			$index = new Kohana_Migration_Index($columns, $traits);
 			$this->_removeIndexes[] = $index->getName();
 		}
 
@@ -66,12 +91,17 @@
 				$alters[] = 'MODIFY COLUMN ' . $column->toSQL();
 			}
 			foreach( $this->_addIndexes as $name => $index ) {
-				$alters[] = 'ADD INDEX ' . $index->toSQL();
+				$alters[] = 'ADD ' . $index->toSQL();
 			}
 			foreach( $this->_removeIndexes as $name) {
-				$alters[] = 'DROP INDEX ' . $name;
+				$alters[] = 'DROP ' . $name;
 			}
-
+			foreach( $this->_addKeys as $name => $index ) {
+				$alters[] = 'ADD ' . $index->toSQL();
+			}
+			foreach( $this->_removeKeys as $name) {
+				$alters[] = 'DROP KEY ' . $name;
+			}
 			return $sql . implode( ",\n  ", $alters ) . ";\n";
 		}
 

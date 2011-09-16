@@ -18,7 +18,6 @@
 
 		protected $_name;
 		protected $_columns;
-		protected $_table;
 		protected $_traits;
 
 		protected static $variantTraits = array(
@@ -32,10 +31,9 @@
 			'hash' => 'USING HASH'
 		);
 
-		public function __construct ( $table, $columns, $traits = null ) {
+		public function __construct ( $columns, $traits = null ) {
 
 			$this->_columns = $columns;
-			$this->_table = $table;
 
 			$default_traits = array(
 				'name' => null
@@ -82,7 +80,7 @@
 				}
 			}
 
-			$sql = "$variant INDEX `{$this->_name}` ON `{$this->_table}` (";
+			$sql = "$variant INDEX `{$this->_name}` (";
 
 			$keys = array();
 			foreach( $this->_columns as $column => $traits ) {

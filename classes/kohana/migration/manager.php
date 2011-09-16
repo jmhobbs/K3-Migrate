@@ -164,3 +164,4 @@ END;
 			return intval( $split[0] );
 		}
 	}
+
