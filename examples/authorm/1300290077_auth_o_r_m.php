@@ -1,8 +1,8 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 	class AuthORM extends Migration {
-		public function up () {
 
+		public function up () {
 
 			/*
 			CREATE TABLE IF NOT EXISTS `roles` (
@@ -14,9 +14,9 @@
 			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 			*/
 			$t = &self::CreateTable( 'roles', array( 'created' => false, 'modified' => false ) );
-			$t->addColumn( 'string', 'name', array( 'size' => 32 ) );
-			$t->addColumn( 'string', 'description' );
-			$t->addIndex( array( 'name' => array( 'unique' ) ), array( 'unique', 'name' => 'uniq_name' ) );
+			$t->addColumn( 'string', 'name', array( 'size' => 32, 'null' => false ) );
+			$t->addColumn( 'string', 'description', array( 'null' => false ) );
+			$t->addKey( array( 'name' => array( 'unique' ) ), array( 'unique', 'name' => 'uniq_name' ) );
 
 			/*
 			CREATE TABLE IF NOT EXISTS `roles_users` (
@@ -26,12 +26,10 @@
 			  KEY `fk_role_id` (`role_id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 			*/
-			// TODO: THE PK
-			$t = &self::CreateTable( 'roles_users', array( 'id' => false, 'created' => false, 'modified' => false ) );
-			$t->integer = 'user_id';
-			$t->integer = 'role_id';
-			// TODO: Show _set version
-			$t->addIndex( array( 'role_id' => array() ), array( 'name' => 'fk_role_id' ) );
+			$t = &self::CreateTable( 'roles_users', array( 'id' => false, 'created' => false, 'modified' => false, 'primary_key' => array( 'user_id', 'role_id' ) ) );
+			$t->integer = array( 'user_id', 'size' => 10, 'unsigned' => true, 'null' => false );
+			$t->integer = array( 'role_id', 'size' => 10, 'unsigned' => true, 'null' => false );
+			$t->addKey( array( 'role_id' => array() ), array( 'name' => 'fk_role_id' ) );
 
 			/*
 			CREATE TABLE IF NOT EXISTS `users` (
@@ -46,13 +44,14 @@
 			  UNIQUE KEY `uniq_email` (`email`)
 			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 			*/
-			// TODO: Keys
 			$t = &self::CreateTable( 'users' );
 			$t->addColumn( 'string', 'email', array( 'size' => 127 ) );
 			$t->addColumn( 'string', 'username', array( 'size' => 32, 'default' => '' ) );
 			$t->addColumn( 'string', 'password', array( 'size' => 64 ) );
 			$t->addColumn( 'integer', 'logins', array( 'unsigned' => true, 'default' => '0' ) );
 			$t->addColumn( 'timestamp', 'last_login' );
+			$t->addKey( array( 'username' => array() ), array( 'name' => 'uniq_username', 'type' => 'unique' ) );
+			$t->addKey( array( 'email' => array() ), array( 'name' => 'uniq_email', 'type' => 'unique' ) );
 
 			/*
 			CREATE TABLE IF NOT EXISTS `user_tokens` (
@@ -68,7 +67,6 @@
 			  KEY `fk_user_id` (`user_id`)
 			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 			*/
-			// TODO: Keys
 			$t = &self::CreateTable( 'user_tokens' );
 			$t->addColumn( 'integer', 'user_id', array( 'unsigned' => true, 'size' => 11 ) );
 			$t->addColumn( 'string', 'user_agent', array( 'size' => 40 ) );
@@ -76,6 +74,8 @@
 			$t->addColumn( 'string', 'type', array( 'size' => 100 ) );
 			$t->addColumn( 'timestamp', 'created');
 			$t->addColumn( 'timestamp', 'expires');
+			$t->addKey( array( 'token' => array() ), array( 'name' => 'uniq_token', 'type' => 'unique') );
+			$t->addKey( array( 'user_id' => array() ), array( 'name' => 'fk_user_id' ) );
 
 			/*
 			ALTER TABLE `roles_users`

@@ -7,33 +7,39 @@
 		protected $_charset;
 
 		protected $_columns = array();
+		protected $_indexes = array();
+		protected $_keys = array();
 		protected $_primaryKey = null;
 
 		/**
 		* Options:
-		*      id  => false/string   - Do not create an automatic id column
-		* created  => false/string   - Created column name || false == no column
-		* modified => false/string   - Modified column name || false == no column
-		*   engine => string
-		*  charset => string
+		*         id  => false/string              - Do not create an automatic id column
+		*    created  => false/string              - Created column name || false == no column
+		*    modified => false/string              - Modified column name || false == no column
+		* primary_key => true/false/string/array   - PK column name || true == auto || false == no PK || array == compound
+		*      engine => string
+		*     charset => string
 		*/
 		public function __construct ( $tableName, $args = null ) {
 			$this->_tableName = $tableName;
 
 			$defaults = array(
-				'id'       => 'id',
-				'created'  => 'created',
-				'modified' => 'modified',
-				'engine'   => 'InnoDB',
-				'charset'  => 'utf8',
+				'id'          => 'id',
+				'created'     => 'created',
+				'modified'    => 'modified',
+				'primary_key' => true,
+				'engine'      => 'InnoDB',
+				'charset'     => 'utf8',
 			);
 
 			if( is_array( $args ) ) { $args = array_merge( $defaults, $args ); }
 			else { $args = $defaults; }
 
 			if( false !== $args['id'] ) {
-				$this->addColumn( 'integer', $args['id'], array( 'null' => false, 'unsigned' => true, 'auto_increment' => true ) );
-				$this->primaryKey( $args['id'] );
+				$this->addColumn( 'integer', $args['id'], array( 'size' => 11, 'null' => false, 'unsigned' => true, 'auto_increment' => true ) );
+				if( true === $args['primary_key'] ) {
+					$this->primaryKey( $args['id'] );
+				}
 			}
 
 			if( false !== $args['created'] ) {
@@ -42,6 +48,10 @@
 
 			if( false !== $args['modified'] ) {
 				$this->addColumn( 'integer', $args['modified'], array( 'null' => false ) );
+			}
+
+			if( is_string( $args['primary_key'] ) or is_array( $args['primary_key'] ) ) {
+				$this->primaryKey( $args['primary_key'] );
 			}
 
 			$this->engine( $args['engine'] );
@@ -57,17 +67,24 @@
 				$rows[] = $column->toSQL();
 			}
 
+			// Insert the PK
 			if( ! is_null( $this->_primaryKey ) ) {
-				$rows[] = "PRIMARY KEY( `{$this->_primaryKey}` )";
+				$pk = ( is_array( $this->_primaryKey ) ) ? implode( '`, `', $this->_primaryKey ) : $this->_primaryKey; 
+				$rows[] = "PRIMARY KEY( `$pk` )";
+			}
+
+			// Generate any other indexes/keys here
+			foreach( $this->_keys as $name => $key ) {
+				$rows[] = $key->toSQL();
+			}
+			foreach( $this->_indexes as $name => $index ) {
+				$rows[] = $index->toSQL();
 			}
 
 			$sql .= implode( ",\n\t", $rows );
 
 			$sql .= "\n) ENGINE={$this->_engine} DEFAULT CHARSET={$this->_charset};\n\n";
 
-			foreach( $this->_indexes as $name => $index ) {
-				$sql .= 'CREATE ' . $index->toSQL() . ";\n";
-			}
 
 			return $sql;
 		}
@@ -86,12 +103,19 @@
 			$this->_indexes[$index->getName()] = $index;
 		}
 
+		public function addKey ( $columns, $traits = null ) {
+			$key = new Kohana_Migration_Key($this->_tableName, $columns, $traits);
+			$this->_keys[$key->getName()] = $key;
+		}
+
 		public function __set ( $type, $value ) {
 			if( Kohana_Migration_Column::isType($type) ) {
+				// $t->integer = array( 'name', 'option' => $value );
 				if( is_array( $value ) ) {
 					$name = array_shift( $value );
 					$this->addColumn( $type, $name, $value );
 				}
+				// $t->integer = 'name';
 				else {
 					$this->addColumn( $type, $value );
 				}

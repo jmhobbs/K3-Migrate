@@ -51,12 +51,16 @@
 
 			// Get the name, if needed
 			if( is_null( $this->_traits['name'] ) ) {
-				$this->_name = "index_" . implode('_', array_keys($this->_columns));
+				$this->_name = $this->_generateName();
 			}
 			else {
 				$this->_name = $this->_traits['name'];
 			}
 
+		}
+
+		public function _generateName () {
+			return "index_" . implode('_', array_keys($this->_columns));
 		}
 
 		public static function isType( $type ) {
