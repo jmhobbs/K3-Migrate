@@ -149,5 +149,29 @@
 					$this->addIndex( array( $value => null), array( $type ) );
 				}
 			}
+			else if ( Kohana_Migration_Key::isType($type) ) {
+				if( is_array( $value ) ) {
+					// $t->index = array( array( "column_name", "another_column" ), array( "btree" ) );
+					if( 2 <= count( $value ) ) {
+						$one = reset( $value );
+						$two = next( $value );
+						if( is_array( $one ) and is_array( $two ) ) {
+							$this->addKey( $one, array_merge( array( $type ), $two ) );
+						}
+						// $t->index = array( "column_name", array( "btree" ) );
+						else if( is_array( $two ) ) {
+							$this->addKey( array( $one => null ), array_merge( array( $type ), $two ) );
+						}
+						// $t->index = array( "column_name", "another_column", "and_another" );
+						else {
+							$this->addKey( $value, array( $type ) );
+						}
+					}
+				}
+				// $t->index = "column_name"
+				else {
+					$this->addKey( array( $value => null), array( $type ) );
+				}
+			}
 		}
 	}

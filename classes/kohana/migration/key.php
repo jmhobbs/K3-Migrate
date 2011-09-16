@@ -6,6 +6,13 @@
 
 	class Kohana_Migration_Key extends Kohana_Migration_Index {
 
+		protected static $variantTraits = array(
+			'key' => '',
+			'unique' => 'UNIQUE',
+			'fulltext' => 'FULLTEXT',
+			'spatial' => 'SPATIAL'
+		);
+
 		public function _generateName () {
 			return "key_" . implode('_', array_keys($this->_columns));
 		}
@@ -46,6 +53,10 @@
 			$sql .= implode( ', ', $keys ) . ")" . ( ( empty( $type ) ) ? '' : " $type" );
 
 			return $sql;
+		}
+
+		public static function isType( $type ) {
+			return array_key_exists( $type, self::$variantTraits );
 		}
 
 	}

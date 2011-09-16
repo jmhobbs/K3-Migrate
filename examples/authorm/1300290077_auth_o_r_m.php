@@ -29,7 +29,7 @@
 			$t = &self::CreateTable( 'roles_users', array( 'id' => false, 'created' => false, 'modified' => false, 'primary_key' => array( 'user_id', 'role_id' ) ) );
 			$t->integer = array( 'user_id', 'size' => 10, 'unsigned' => true, 'null' => false );
 			$t->integer = array( 'role_id', 'size' => 10, 'unsigned' => true, 'null' => false );
-			$t->addKey( array( 'role_id' => array() ), array( 'name' => 'fk_role_id' ) );
+			$t->key = array( 'role_id', array( 'name' => 'fk_role_id' ) );
 
 			/*
 			CREATE TABLE IF NOT EXISTS `users` (
@@ -77,14 +77,11 @@
 			$t->addKey( array( 'token' => array() ), array( 'name' => 'uniq_token', 'type' => 'unique') );
 			$t->addKey( array( 'user_id' => array() ), array( 'name' => 'fk_user_id' ) );
 
-
-
 			/*
 			ALTER TABLE `roles_users`
 			  ADD CONSTRAINT `roles_users_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
 			  ADD CONSTRAINT `roles_users_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 			*/
-			// TODO: Constraint name vs. index name?
 			$t = &self::AlterTable( 'roles_users' );
 			$t->addForeignKey( array( 'user_id' ), 'users', array( 'id' ), array( 'delete' => 'cascade', 'name' => 'roles_users_ibfk_1' ) );
 			$t->addForeignKey( array( 'role_id' ), 'roles', array( 'id' ), array( 'delete' => 'cascade', 'name' => 'roles_users_ibfk_2' ) );
