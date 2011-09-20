@@ -14,6 +14,7 @@
 		protected $_addIndexes = array();
 		protected $_addKeys = array();
 		protected $_removeIndexes = array();
+		protected $_removeKeys = array();
 
 		public function __construct( $tableName ) {
 			$this->_tableName = $tableName;

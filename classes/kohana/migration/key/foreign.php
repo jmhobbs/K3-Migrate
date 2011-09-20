@@ -59,7 +59,7 @@
 				$blocks[] = "CONSTRAINT `{$this->_name}`";
 			}
 
-			$blocks[] = "FOREIGN KEY" . ( ( ! is_null( $this->_index_name ) ) ? " `{$this->_index_name}`" : '' ) . " ( `" . implode( '`, `', $this->_near_columns ) . "` )";
+			$blocks[] = "FOREIGN KEY" . ( ( isset( $this->_index_name ) and ! is_null( $this->_index_name ) ) ? " `{$this->_index_name}`" : '' ) . " ( `" . implode( '`, `', $this->_near_columns ) . "` )";
 			$blocks[] = "REFERENCES `{$this->_far_table}` ( `" . implode( '`, `', $this->_far_columns ) . "` )";
 
 			if ( is_array( $this->_traits ) ) {
