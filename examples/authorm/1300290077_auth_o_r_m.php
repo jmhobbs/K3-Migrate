@@ -94,7 +94,18 @@
 			$t->addForeignKey( array( 'user_id' ), 'users', array( 'id' ), array( 'delete' => 'cascade', 'name' => 'user_tokens_ibfk_1' ) );
 		}
 		public function down () {
-			// TODO
+			/* DROP TABLE `user_tokens`; */
+			$t = &self::DropTable( 'user_tokens' );
+
+			/* DROP TABLE `roles_users`; */
+			$t = &self::DropTable( 'roles_users' );
+
+			/* DROP TABLE `users`; */
+			$t = &self::DropTable( 'users' );
+
+			/* DROP TABLE `roles`; */
+			$t = &self::DropTable( 'roles' );
 		}
+
 	}
 
