@@ -20,52 +20,144 @@
 			$this->_tableName = $tableName;
 		}
 
+		/*!
+			Add a key to this table.
+
+			\param columns An array of columns to put the key on.
+			\param traits An optional array of traits for the key.
+
+			\sa Kohana_Migration_Key
+		*/
 		public function addKey ( $columns, $traits = null ) {
 			$key = new Kohana_Migration_Key($columns, $traits);
 			$this->_addKeys[$key->getName()] = $key;
 		}
 
+		/*!
+			Remove a key from this table.
+
+			\param name The name of the key.
+		*/
 		public function removeKey ( $name ) {
 			$this->_removeKeys[] = $name;
 		}
 
+		/*!
+			Remove a key from this table by it's definition.
+
+			This only works when you have added the key without specifying the name.
+
+			\param columns An array of columns to put the key on.
+			\param traits An optional array of traits for the key.
+
+			\sa Kohana_Migration_Key
+		*/
 		public function removeKeyByDefinition( $columns, $traits = null ) {
 			$key = new Kohana_Migration_Key($columns, $traits);
 			$this->_removeKeys[] = $key->getName();
 		}
 
+		/*!
+			Add a foreign key to this table.
+
+			\param near_columns An array of columns in the near table to match to foreign columns.
+			\param far_table The name of the foreign table.
+			\param far_columns An array with a 1:1 matching of column names on the foreign table.
+			\param traits An optional array of traits to apply to this table.
+
+			\sa Kohana_Migration_Key_Foreign::$_traits
+		*/
 		public function addForeignKey ( $near_columns, $far_table, $far_columns, $traits = null ) {
 			$key = new Kohana_Migration_Key_Foreign($near_columns, $far_table, $far_columns, $traits);
 			$this->_addKeys[$key->getName()] = $key;
 		}
 
+		/*!
+			Remove a foreign key from this table by it's definition.
+
+			This only works when you have added the key without specifying the name.
+
+			\param near_columns An array of columns in the near table to match to foreign columns.
+			\param far_table The name of the foreign table.
+			\param far_columns An array with a 1:1 matching of column names on the foreign table.
+			\param traits An optional array of traits to apply to this table.
+
+			\sa Kohana_Migration_Key_Foreign::$_traits
+		*/
 		public function removeForeignKeyByDefinition ( $near_columns, $far_table, $far_columns, $traits = null ) {
 			$key = new Kohana_Migration_Key_Foreign($near_columns, $far_table, $far_columns, $traits);
 			$this->_removeKeys[] = $key->getName();
 		}
 
+		/*!
+			Add an index to this table.
+
+			\param columns An array of columns to put the inex on.
+			\param traits An optional array of traits for the index.
+
+			\sa Kohana_Migration_Index
+		*/
 		public function addIndex ( $columns, $traits = null ) {
 			$index = new Kohana_Migration_Index($columns, $traits);
 			$this->_addIndexes[$index->getName()] = $index;
 		}
 
+		/*!
+			Remove an index from this table.
+
+			\param name The name of the index.
+		*/
+		public function removeIndex( $name ) {
+			$this->_removeIndexes[] = $name;
+		}
+
+		/*!
+			Remove an index from this table by it's definition.
+
+			This only works when you have added the index without specifying the name.
+
+			\param columns An array of columns to put the index on.
+			\param traits An optional array of traits for the index.
+
+			\sa Kohana_Migration_Index
+		*/
 		public function removeIndexByDefinition( $columns, $traits = null ) {
 			$index = new Kohana_Migration_Index($columns, $traits);
 			$this->_removeIndexes[] = $index->getName();
 		}
 
-		public function removeIndex( $name ) {
-			$this->_removeIndexes[] = $name;
-		}
+		/*!
+			Add a column to this table.
 
+			\param type The type of column to add.
+			\param name The name of the new column.
+			\param traits An optional array of traits for this column.
+
+			\sa Kohana_Migration_Column::$_traits
+		*/
 		public function addColumn ( $type, $name, $traits = null ) {
 			$this->_addColumns[$name] = new Kohana_Migration_Column( $name, $type, $traits );
 		}
 
+		/*!
+			Remove a column from this table.
+
+			\param name The name of the column to remove.
+		*/
 		public function removeColumn ( $name ) {
 			$this->_removeColumns[] = $name;
 		}
 
+		/*!
+			Alter a column.
+
+			\param name The original name of the column.
+			\param type The type of the column.
+			\param traits An optional array of traits for this column.
+			\param new_name An optional new name for this column.
+
+			\sa Kohana_Migration_Column::$_traits
+		*/
 		public function alterColumn ( $name, $type, $traits = null, $new_name = null ) {
 			if( is_null( $new_name ) or $name == $new_name ) {
 				$this->_modifyColumns[$name] =  new Kohana_Migration_Column( $name, $type, $traits );
@@ -110,10 +202,12 @@
 		public function __set ( $type, $value ) {
 			if( Kohana_Migration_Column::isType($type) ) {
 				if( is_array( $value ) ) {
+					// $t->integer = array( 'name', array( 'size' => 10 ) );
 					$name = array_shift( $value );
 					$this->addColumn( $type, $name, $value );
 				}
 				else {
+					// $t->integer = 'name';
 					$this->addColumn( $type, $value );
 				}
 			}
@@ -144,8 +238,8 @@
 		}
 
 		public function __unset ( $name ) {
+			// TODO: Can we select between columns and keys/indices?
 			$this->_removeColumns[] = $name;
 		}
-
 
 	}
