@@ -78,6 +78,15 @@
 			$t->addKey( array( 'user_id' => array() ), array( 'name' => 'fk_user_id' ) );
 
 			/*
+			// Example of a post-query hook that can abort the migration.
+			$t->runAfter( function ( $stmnt, $migration, $db ) { 
+				print "# If you return false in a hook it \n";
+				print "# rolls back and cancels the migration.\n\n";
+				return false;
+			} );
+			*/
+
+			/*
 			ALTER TABLE `roles_users`
 			  ADD CONSTRAINT `roles_users_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
 			  ADD CONSTRAINT `roles_users_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
