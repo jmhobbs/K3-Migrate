@@ -15,8 +15,13 @@
 		}
 
 		public function action_index () {
-			print " Total Migrations: " . count( $this->runner->enumerateMigrations() ) . "\n\n";
 			$current_version = $this->runner->getSchemaVersion();
+			if( empty( $current_version ) ) {
+				print " You have not performed any migrations yet!\n\n";
+			}
+
+			print " Total Migrations: " . count( $this->runner->enumerateMigrations() ) . "\n\n";
+
 			foreach( $this->runner->enumerateMigrations() as $migration ) {
 				if( $this->runner->migrationNameToVersion( $migration ) == $current_version ) {
 					print " You Are Here =>  ";
@@ -68,3 +73,4 @@
 			print "Created migration `$class_name` in file `" . $file_name . "`\n";
 		}
 	}
+

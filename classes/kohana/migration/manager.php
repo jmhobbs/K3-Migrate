@@ -24,7 +24,7 @@
 			if( ! is_dir( $this->config->path ) )
 				mkdir( $this->config->path );
 
-			$version_file = rtrim( $this->config->path, '/' ) . '/.version';
+			$version_file = rtrim( $this->config->path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '.version';
 
 			if ( file_exists( $version_file ) ) {
 				$fversion = fopen( $version_file,'r' );
@@ -40,11 +40,9 @@
 			if( ! is_dir( $this->config->path ) )
 				mkdir( $this->config->path );
 
-			$version_file = dirname( $this->config->path, '/' ) . '/.version';
+			$version_file = rtrim( $this->config->path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '.version';
 
-			$fversion = fopen( $version_file, 'w' );
-			fwrite( $fversion, $version );
-			fclose( $fversion );
+			file_put_contents( $version_file, $version );
 		}
 
 		public function lastSchemaVersion () {
@@ -53,41 +51,31 @@
 		}
 
 		public function getMigrationClass( $name ) {
-			require_once( $this->config->path . '/' . $name . '.php');
+			require_once( $this->config->path . DIRECTORY_SEPARATOR . $name . '.php');
 			$classname = self::migrationNameToClassName( $name );
 			$class = new $classname();
 			return $class;
 		}
 
-		public function getMigrationUp( $name ) {
-			return $this->getMigrationClass()->queryUp();
-		}
-
-		public function getMigrationDown( $name ) {
-			return $this->getMigrationClass()->queryDown();
-		}
-
 		public function runMigrationUp ( $name ) {
-			$this->executeSQL( $this->getMigrationUp( $name ) );
+			// TODO: Named DB?
+			$this->getMigrationClass( $name )->migrateUp( Database::instance() );
+			$this->setSchemaVersion( self::migrationNameToVersion( $name ) );
 		}
 
 		public function runMigrationDown ( $name ) {
-			$this->executeSQL( $this->getMigrationDown( $name ) );
-		}
-
-		public function executeSQL( $sql ) {
-			$queries = explode( ';', $sql );
-			$db = Database::instance(); // TODO: Named DBs?
-			foreach( $queries as $query ) {
-				$query = trim( $query );
-				if( empty( $query ) ) { continue; }
-				$db->query( Database::UPDATE, $query, false );
-			}
+			// TODO: Named DB?
+			$this->getMigrationClass( $name )->migrateDown( Database::instance() );
+			$this->setSchemaVersion( self::migrationNameToVersion( $name ) );
 		}
 
 		public function seed () {
-			if( is_file( $this->config->path . '/seed.php' ) ) {
-				require_once( $this->config->path . '/seed.php');
+			$seed_path = $this->config->path . DIRECTORY_SEPARATOR . 'seed.php';
+			if( is_file( $seed_path ) ) {
+				require_once( $seed_path );
+			}
+			else {
+				throw new Exception( 'Seed file does not exist: ' . $seed_path );
 			}
 		}
 
@@ -103,7 +91,7 @@
 
 
 END;
-			file_put_contents( $this->config->path . '/' . $name . '.php', $class );
+			file_put_contents( $this->config->path . DIRECTORY_SEPARATOR . $name . '.php', $class );
 			return $name . '.php';
 		}
 
@@ -151,7 +139,11 @@ END;
 		*/
 		public static function classNameToMigrationName ( $class_name ) {
 			preg_match_all( '/[A-Z][^A-Z]*/', $class_name, $results);
-			return strtolower( implode( '_', $results[0] ) );
+			$name = strtolower( implode( '_', $results[0] ) );
+			if( 0 == strlen( $name ) ) {
+				throw new Exception( 'Invalid class name: ' . $class_name );
+			}
+			return $name;
 		}
 
 		/**
