@@ -3,10 +3,20 @@
 	class Kohana_Migration_Manager {
 
 		protected $config = null;
+		protected $database = null;
 
 		public function __construct ( $config ) {
 			if( ! is_dir( $config->path ) ) { throw new Kohana_Exception( "Invalid Migrations Path: {$config->path}" ); }
+
 			$this->config = $config;
+			
+			if( false !== ( $database = getenv( 'ENVIRONMENT' ) ) ) {
+				$this->database = $database; 
+			}
+			else {
+				$this->database = $this->config->database;
+			}
+
 		}
 
 		public function enumerateMigrations () {
@@ -24,7 +34,7 @@
 			if( ! is_dir( $this->config->path ) )
 				mkdir( $this->config->path );
 
-			$version_file = rtrim( $this->config->path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '.version';
+			$version_file = rtrim( $this->config->path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '.version-' . $this->database;
 
 			if ( file_exists( $version_file ) ) {
 				$fversion = fopen( $version_file,'r' );
@@ -40,7 +50,7 @@
 			if( ! is_dir( $this->config->path ) )
 				mkdir( $this->config->path );
 
-			$version_file = rtrim( $this->config->path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '.version';
+			$version_file = rtrim( $this->config->path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '.version-' . $this->database;
 
 			file_put_contents( $version_file, $version );
 		}
@@ -58,14 +68,13 @@
 		}
 
 		public function runMigrationUp ( $name ) {
-			// TODO: Named DB?
-			$this->getMigrationClass( $name )->migrateUp( Database::instance() );
+			$this->getMigrationClass( $name )->migrateUp( Database::instance( $this->database ) );
 			$this->setSchemaVersion( self::migrationNameToVersion( $name ) );
 		}
 
 		public function runMigrationDown ( $name ) {
-			// TODO: Named DB?
-			$this->getMigrationClass( $name )->migrateDown( Database::instance() );
+			$this->getMigrationClass( $name )->migrateDown( Database::instance( $this->database ) );
+			// TODO: Need to set schema to PREVIOUS migration, not this one!
 			$this->setSchemaVersion( self::migrationNameToVersion( $name ) );
 		}
 

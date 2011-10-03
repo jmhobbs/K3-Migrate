@@ -2,4 +2,5 @@
 
 	return array(
 		'path' => DOCROOT . 'db/migrations',
+		'database' => 'testing',
 	);
