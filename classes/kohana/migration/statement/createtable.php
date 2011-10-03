@@ -39,7 +39,7 @@
 			\sa $_default_options
 		*/
 		public function __construct ( $name, $args = null ) {
-			$this->_tableName = $tableName;
+			$this->_tableName = $name;
 
 			if( is_array( $args ) ) { $args = array_merge( $this->_default_options, $args ); }
 			else { $args = $this->_default_options; }
