@@ -33,7 +33,9 @@
 			}
 		}
 
-		public function action_up ( $target = null ) {
+		public function action_up () {
+                        $target = $this->request->param('id');
+                        
 			foreach( $this->runner->enumerateMigrations() as $migration ) {
 				print "==[ $migration ]==\n";
 				$this->runner->runMigrationUp( $migration );
@@ -41,7 +43,9 @@
 			}
 		}
 
-		public function action_down ( $target = null ) {
+		public function action_down () {
+                        $target = $this->request->param('id');
+                        
 			foreach( $this->runner->enumerateMigrations() as $migration ) {
 				print "==[ $migration ]==\n";
 				$this->runner->runMigrationDown( $migration );
@@ -49,7 +53,9 @@
 			}
 		}
 
-		public function action_print ( $target = null ) {
+		public function action_print () {
+                        $target = $this->request->param('id');
+                    
 			foreach( $this->runner->enumerateMigrations() as $migration ) {
 				print "======[ $migration ]======\n";
 				print "===[ UP ]===\n";
@@ -65,7 +71,9 @@
 			$this->runner->seed();
 		}
 
-		public function action_create ( $class_name = null ) {
+		public function action_create () {         
+                        $class_name = $this->request->param('id');
+                    
 			if( null == $class_name ) {
 				throw new Kohana_Exception( "A Class Name Is Required" );
 			}

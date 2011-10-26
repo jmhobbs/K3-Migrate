@@ -2,8 +2,8 @@
 
 Route::set('migrate', 'migrate(/<action>(/<id>))',
     array(
-        'action' => '(index|up|down)',
-        'id' => '\d+',
+        'action' => '(index|up|down|print|seed|create)',
+        'id' => '[A-Za-z]+',
     ))->defaults(array(
         'controller'=> 'migrate',
         'action' => 'index',
