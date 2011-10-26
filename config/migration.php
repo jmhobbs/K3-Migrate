@@ -2,5 +2,5 @@
 
 	return array(
 		'path' => APPPATH.'migrations',
-		'database' => 'testing',
+		'database' => 'default',
 	);

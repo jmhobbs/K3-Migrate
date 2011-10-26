@@ -46,7 +46,7 @@
 		public function action_down () {
                         $target = $this->request->param('id');
                         
-			foreach( $this->runner->enumerateMigrations() as $migration ) {
+			foreach( array_reverse($this->runner->enumerateMigrations()) as $migration ) {
 				print "==[ $migration ]==\n";
 				$this->runner->runMigrationDown( $migration );
 				print "\n";
