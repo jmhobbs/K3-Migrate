@@ -5,7 +5,7 @@
 		public function before () {
 			parent::before();
 			if( ! Kohana::$is_cli ) { throw new Kohana_Exception( "CLI Access Only" ); }
-			$this->runner = new Migration_Manager(Kohana::config('migration'));
+			$this->runner = new Migration_Manager(Kohana::$config->load('migration'));
 			print "\n=============[ K3-Migrate ]============\n\n";
 		}
 
