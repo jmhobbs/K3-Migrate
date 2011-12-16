@@ -36,20 +36,28 @@
 		public function action_up () {
                         $target = $this->request->param('id');
                         
+			$performed = 0;
+			
 			foreach( $this->runner->enumerateUpMigrations() as $migration ) {
 				print "==[ $migration ]==\n";
 				$this->runner->runMigrationUp( $migration );
 				print "\n";
+				
+				if ($target > 0 && $target == ++$performed) break;
 			}
 		}
 
 		public function action_down () {
                         $target = $this->request->param('id');
-                        
+            
+			$performed = 0;
+            
 			foreach( $this->runner->enumerateDownMigrations() as $migration ) {
 				print "==[ $migration ]==\n";
 				$this->runner->runMigrationDown( $migration );
 				print "\n";
+				
+				if ($target > 0 && $target == ++$performed) break;
 			}
 		}
 
