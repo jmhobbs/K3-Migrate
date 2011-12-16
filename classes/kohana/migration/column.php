@@ -108,6 +108,15 @@
 				'traits' => array(),
 				'default_traits' => array()
 			),
+			'bool' => array(
+				'type' => 'TINYINT',
+				'size' => null,
+				'null' => false,
+				'default' => null,
+				'comment' => null,
+				'traits' => array(),
+				'default_traits' => array()
+			),
 		);
 
 		public static function isType ( $name ) {
