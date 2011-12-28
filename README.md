@@ -28,3 +28,9 @@ In K3-Migrate there is usually more than one way to do something, but there are 
 
 Each statement is nested inside of a Migration object's <tt>up</tt> or <tt>down</tt> methods.
 
+## Contributors
+
+ * [@jmhobbs](https://github.com/jmhobbs)
+ * [@thomfort](https://github.com/thomfort)
+ * [@iGore](https://github.com/iGore)
+ * [@Bishop](https://github.com/Bishop)
