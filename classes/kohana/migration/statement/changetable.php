@@ -15,6 +15,7 @@
 		protected $_addKeys = array();
 		protected $_removeIndexes = array();
 		protected $_removeKeys = array();
+		protected $_renameTo = '';
 
 		public function __construct( $tableName ) {
 			$this->_tableName = $tableName;
@@ -167,6 +168,15 @@
 			}
 		}
 
+		/*!
+			Rename a table
+
+			\param name New name for table
+		*/
+		public function renameTo( $name ) {
+			$this->_renameTo = $name;
+		}
+
 		public function toSQL () {
 			// TODO: All operations in order of request
 			$sql = "ALTER TABLE `{$this->_tableName}`\n  ";
@@ -194,6 +204,9 @@
 			}
 			foreach( $this->_removeKeys as $name) {
 				$alters[] = 'DROP KEY ' . $name;
+			}
+			if( $this->_renameTo ) {
+				$alters[] = 'RENAME TO ' . $this->_renameTo;
 			}
 			return $sql . implode( ",\n  ", $alters ) . ";\n";
 		}
