@@ -18,6 +18,7 @@ reference_option:
 	class Kohana_Migration_Key_Foreign extends Kohana_Migration_Statement {
 
 		protected $_name;
+		protected $_index_name;
 		protected $_near_columns;
 		protected $_far_columns;
 		protected $_far_table;
@@ -66,6 +67,8 @@ reference_option:
 			if( is_array( $traits ) ) {
 				$this->_traits = array_merge( $this->_traits, $traits );
 			}
+
+			$this->_index_name = $this->_traits['index_name'];
 
 			// Get the name, if needed
 			if( is_null( $this->_traits['name'] ) ) {
