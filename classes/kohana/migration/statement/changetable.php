@@ -15,6 +15,8 @@
 		protected $_addKeys = array();
 		protected $_removeIndexes = array();
 		protected $_removeKeys = array();
+		protected $_removeForeignKeys = array();
+		protected $_renameTo = '';
 
 		public function __construct( $tableName ) {
 			$this->_tableName = $tableName;
@@ -73,6 +75,15 @@
 		}
 
 		/*!
+			Remove a foreign key from this table by it's name
+
+			\param name The name of the index.
+		*/
+		public function removeForeignKey( $name ) {
+			$this->_removeForeignKeys[] = $name;
+		}
+
+		/*!
 			Remove a foreign key from this table by it's definition.
 
 			This only works when you have added the key without specifying the name.
@@ -86,7 +97,7 @@
 		*/
 		public function removeForeignKeyByDefinition ( $near_columns, $far_table, $far_columns, $traits = null ) {
 			$key = new Kohana_Migration_Key_Foreign($near_columns, $far_table, $far_columns, $traits);
-			$this->_removeKeys[] = $key->getName();
+			$this->_removeForeignKeys[] = $key->getName();
 		}
 
 		/*!
@@ -167,6 +178,15 @@
 			}
 		}
 
+		/*!
+			Rename a table
+
+			\param name New name for table
+		*/
+		public function renameTo( $name ) {
+			$this->_renameTo = $name;
+		}
+
 		public function toSQL () {
 			// TODO: All operations in order of request
 			$sql = "ALTER TABLE `{$this->_tableName}`\n  ";
@@ -194,6 +214,12 @@
 			}
 			foreach( $this->_removeKeys as $name) {
 				$alters[] = 'DROP KEY ' . $name;
+			}
+			foreach( $this->_removeForeignKeys as $name) {
+				$alters[] = 'DROP FOREIGN KEY ' . $name;
+			}
+			if( $this->_renameTo ) {
+				$alters[] = 'RENAME TO ' . $this->_renameTo;
 			}
 			return $sql . implode( ",\n  ", $alters ) . ";\n";
 		}
