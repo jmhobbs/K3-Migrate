@@ -79,28 +79,28 @@
 		}
 
 		public function getSchemaVersion () {
-			if( ! is_dir( $this->config->path ) )
-				mkdir( $this->config->path );
+			$version_file = $this->getSchemaVersionFileName();
 
-			$version_file = rtrim( $this->config->path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '.version-' . $this->database;
+			$version = 0;
 
 			if ( file_exists( $version_file ) ) {
-				$fversion = fopen( $version_file,'r' );
-				$version = fread( $fversion, 11 );
-				fclose( $fversion );
-				return $version;
+				$version = file_get_contents( $version_file );
 			}
 
-			return 0;
+			return $version;
 		}
 
 		public function setSchemaVersion ( $version ) {
+			$version_file = $this->getSchemaVersionFileName();
+
+			file_put_contents( $version_file, $version );
+		}
+
+		protected function getSchemaVersionFileName () {
 			if( ! is_dir( $this->config->path ) )
 				mkdir( $this->config->path );
 
-			$version_file = rtrim( $this->config->path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '.version-' . $this->database;
-
-			file_put_contents( $version_file, $version );
+			return rtrim( $this->config->path, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . '.version-' . $this->database;
 		}
 
 		public function lastSchemaVersion () {
