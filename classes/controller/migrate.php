@@ -1,6 +1,10 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
 	class Controller_Migrate extends Controller {
+		/**
+		 * @var Migration_Manager
+		 */
+		protected $runner;
 
 		public function before () {
 			parent::before();
