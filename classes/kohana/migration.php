@@ -102,8 +102,7 @@
 		 * @return Kohana_Migration_Statement_CreateTable
 		 */
 		public static function &CreateTable ( $name, $args = null ) {
-			self::$statements[] = new Kohana_Migration_Statement_CreateTable( $name, $args );
-			return self::$statements[count(self::$statements)-1];
+			return self::addStatement( new Kohana_Migration_Statement_CreateTable( $name, $args ) );
 		}
 
 		/**
@@ -113,8 +112,7 @@
 		 * @return Kohana_Migration_Statement_ChangeTable
 		 */
 		public static function &ChangeTable ( $name ) {
-			self::$statements[] = new Kohana_Migration_Statement_ChangeTable( $name );
-			return self::$statements[count(self::$statements)-1];
+			return self::addStatement( new Kohana_Migration_Statement_ChangeTable( $name ) );
 		}
 
 		/**
@@ -129,13 +127,21 @@
 
 		/**
 		 * Add a DropTable statement to the statement queue.
-		 * 		 * @static
+		 * @static
 		 * @param $name - The name of the table
 		 * @return Kohana_Migration_Statement_DropTable
 		 */
 		public static function &DropTable ( $name ) {
-			self::$statements[] = new Kohana_Migration_Statement_DropTable( $name );
-			return self::$statements[count(self::$statements)-1];
+			return self::addStatement( new Kohana_Migration_Statement_DropTable( $name ) );
 		}
 
+		/**
+		 * @static
+		 * @param Kohana_Migration_Statement $statement
+		 * @return Kohana_Migration_Statement
+		 */
+		protected static function addStatement( $statement ) {
+			self::$statements[] = $statement;
+			return $statement;
+		}
 	}
