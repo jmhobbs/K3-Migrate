@@ -63,6 +63,21 @@
 			}
 		}
 
+		/**
+		 * Mark all migrations as performed
+		 */
+		public function action_fake () {
+			$migrations = $this->runner->enumerateUpMigrations();
+
+			$migration = array_pop($migrations);
+
+			print "==[ $migration ]==\n";
+
+			$this->runner->setSchemaVersion(
+				$this->runner->migrationNameToVersion($migration)
+			);
+		}
+
 		public function action_print () {
 			$target = $this->request->param('id');
 
