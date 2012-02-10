@@ -16,6 +16,8 @@
 		protected $_removeIndexes = array();
 		protected $_removeKeys = array();
 		protected $_removeForeignKeys = array();
+		protected $_addPrimaryKey = false;
+		protected $_removePrimaryKey = false;
 		protected $_renameTo = '';
 
 		public function __construct( $tableName ) {
@@ -50,7 +52,7 @@
 		 * @param array $columns - An array of columns to put the key on.
 		 * @param array|null $traits - An optional array of traits for the key.
 		 */
-		public function removeKeyByDefinition( $columns, $traits = null ) {
+		public function removeKeyByDefinition ( $columns, $traits = null ) {
 			$key = new Kohana_Migration_Key($columns, $traits);
 			$this->_removeKeys[] = $key->getName();
 		}
@@ -72,7 +74,7 @@
 		 * Remove a foreign key from this table by it's name
 		 * @param string $name - The name of the index.
 		 */
-		public function removeForeignKey( $name ) {
+		public function removeForeignKey ( $name ) {
 			$this->_removeForeignKeys[] = $name;
 		}
 
@@ -88,6 +90,26 @@
 		public function removeForeignKeyByDefinition ( $near_columns, $far_table, $far_columns, $traits = null ) {
 			$key = new Kohana_Migration_Key_Foreign($near_columns, $far_table, $far_columns, $traits);
 			$this->_removeForeignKeys[] = $key->getName();
+		}
+
+		/**
+		 * Add a primary key to table
+		 * @param array|string $columns
+		 */
+		public function addPrimaryKey ( $columns ) {
+			$this->_addPrimaryKey = (array) $columns;
+		}
+
+		/**
+		 * Remove a primary key from this table
+		 * AUTO_INCREMENT for key field must be removed before
+		 * @example:
+		 * $table = self::ChangeTable('test');
+		 * $table->alterColumn( 'id', 'integer', array( 'size' => 11, 'null' => false, 'unsigned' => true ) );
+		 * $table->removePrimaryKey();
+		 */
+		public function removePrimaryKey () {
+			$this->_removePrimaryKey = true;
 		}
 
 		/**
@@ -202,6 +224,12 @@
 			}
 			if( $this->_renameTo ) {
 				$alters[] = 'RENAME TO ' . $this->_renameTo;
+			}
+			if( $this->_removePrimaryKey) {
+				$alters[] = 'DROP PRIMARY KEY';
+			}
+			if( $this->_addPrimaryKey !== false ) {
+				$alters[] = sprintf('ADD PRIMARY KEY (%s)', implode(',', $this->_addPrimaryKey));
 			}
 			return $sql . implode( ",\n  ", $alters ) . ";\n";
 		}
