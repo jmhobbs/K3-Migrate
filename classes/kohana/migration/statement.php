@@ -8,7 +8,7 @@
 		/**
 		 * Return the SQL required to execute this statement.
 		 * @return string
-		*/
+		 */
 		abstract public function toSQL ();
 
 		/**
@@ -25,7 +25,7 @@
 		 * @param string migration - The Kohana_Migration running this statement.
 		 * @param Database database - The Database object the Kohana_Migration is using.
 		 * @return bool, true if all hooks return true, false if any return false.
-		*/
+		 */
 		public function before ( $migration, $database ) {
 			foreach( $this->_before as $before ) {
 				if( ! $before( $this, $migration, $database ) ) {
@@ -39,7 +39,7 @@
 		 * Register a hook to run after the statement is executed.
 		 * Only ran on top level statements (CreateTable, ChangeTable, DropTable)
 		 * @param Closure|array $fn
-		*/
+		 */
 		public function runAfter ( $fn ) {
 			$this->_after[] = $fn;
 		}
@@ -49,7 +49,7 @@
 		 * @param string migration - The Kohana_Migration running this statement.
 		 * @param Database database - The Database object the Kohana_Migration is using.
 		 * @return bool, true if all hooks return true, false if any return false.
-		*/
+		 */
 		public function after ( $migration, $database ) {
 			foreach( $this->_after as $after ) {
 				if( ! $after( $this, $migration, $database ) ) {

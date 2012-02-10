@@ -108,6 +108,10 @@
 			return self::migrationNameToVersion( end( $migrations ) );
 		}
 
+		/**
+		 * @param string $name
+		 * @return Migration
+		 */
 		public function getMigrationClass( $name ) {
 			require_once( $this->config->path . DIRECTORY_SEPARATOR . $name . '.php');
 			$classname = self::migrationNameToClassName( $name );
@@ -125,40 +129,40 @@
 			// TODO: Need to set schema to PREVIOUS migration, not this one!
 			//$this->setSchemaVersion( self::migrationNameToVersion( $name ) );
                         
-                        /*
-                         * PREVIOUS Version without tracked,
-                         * temporary quick and dirty answer
-                         */
-                        $files = scandir( $this->config->path );
-                        
-                        /* Need for closure use */
-                        $self = $this;
+			/*
+			 * PREVIOUS Version without tracked,
+			 * temporary quick and dirty answer
+			 */
+			$files = scandir( $this->config->path );
+
+			/* Need for closure use */
+			$self = $this;
                         
 			$migrations =  array_reverse(
-                                array_filter(
-                                    array_filter(
-                                            $files,
-                                            'Migration_Manager::isMigrationFile'
-                                    ),
-                                    function($file) use($self) {
-                                        if (Migration_Manager::migrationNameToVersion($file) < $self->getSchemaVersion())
-                                            return TRUE;
+				array_filter(
+					array_filter(
+							$files,
+							'Migration_Manager::isMigrationFile'
+					),
+					function($file) use($self) {
+						if (Migration_Manager::migrationNameToVersion($file) < $self->getSchemaVersion())
+							return TRUE;
 
-                                        return FALSE;
-                                    }
-                                )
+						return FALSE;
+					}
+				)
 			);
-                        
-                        foreach ($migrations as $migration) {
-                            $version = Migration_Manager::migrationNameToVersion($migration);
-                            break;
-                        }
-                        
-                        if ( ! isset ($version)) {
-                            $version = 0;
-                        }
-                        
-                        $this->setSchemaVersion($version);
+
+			foreach ($migrations as $migration) {
+				$version = Migration_Manager::migrationNameToVersion($migration);
+				break;
+			}
+
+			if ( ! isset ($version)) {
+				$version = 0;
+			}
+
+			$this->setSchemaVersion($version);
 		}
 
 		public function seed () {
@@ -188,18 +192,21 @@ END;
 		}
 
 		/**
-		* Check if the given filename matches the migration file format:
-		* [timestamp]_[migration_name].php
-		*/
+		 * Check if the given filename matches the migration file format:
+		 * [timestamp]_[migration_name].php
+		 * @param string $filename
+		 * @return bool
+		 */
 		public static function isMigrationFile ( $filename ) {
 			return ( 0 != preg_match( '/[0-9]+_[a-zA-Z0-9_]+\.php/', basename( $filename ) ) );
 		}
 
 		/**
-		* Convert a file name into a migration name (i.e. strip the extension)
-		*
-		* Example: 1299086729_user_migration.php => 1299086729_user_migration
-		*/
+		 * Convert a file name into a migration name (i.e. strip the extension)
+		 * Example: 1299086729_user_migration.php => 1299086729_user_migration
+		 * @param string $filename
+		 * @return string
+		 */
 		public static function fileNameToMigrationName ( $filename ) {
 			$position = strrpos( strtolower( basename( $filename ) ), '.php' );
 			if( false !== $position ) {
@@ -208,10 +215,11 @@ END;
 		}
 
 		/**
-		* Convert a migration name into the corresponding class name.
-		*
-		* Example: 1299086729_user_migration => UserMigration
-		*/
+		 * Convert a migration name into the corresponding class name.
+		 * Example: 1299086729_user_migration => UserMigration
+		 * @param string $migration_name
+		 * @return string
+		 */
 		public static function migrationNameToClassName ( $migration_name ) {
 			return str_replace(
 				' ', '',
@@ -225,10 +233,11 @@ END;
 		}
 
 		/**
-		* Convert a class name to migration name.
-		*
-		* Example: UserMigration => user_migration
-		*/
+		 * Convert a class name to migration name.
+		 * Example: UserMigration => user_migration
+		 * @param string $class_name
+		 * @return string
+		 */
 		public static function classNameToMigrationName ( $class_name ) {
 			preg_match_all( '/[A-Z][^A-Z]*/', $class_name, $results);
 			$name = strtolower( implode( '_', $results[0] ) );
@@ -239,10 +248,11 @@ END;
 		}
 
 		/**
-		* Convert a migration (file) name into it's version.
-		*
-		* Example: 1299086729_user_migration => 1299086729
-		*/
+		 * Convert a migration (file) name into it's version.
+		 * Example: 1299086729_user_migration => 1299086729
+		 * @param string $migration_name
+		 * @return int
+		 */
 		public static function migrationNameToVersion ( $migration_name ) {
 			$split = explode( '_', $migration_name );
 			return intval( $split[0] );

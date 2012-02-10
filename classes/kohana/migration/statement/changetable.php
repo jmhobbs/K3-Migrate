@@ -84,7 +84,7 @@
 		 * @param string far_table - The name of the foreign table.
 		 * @param array far_columns - An array with a 1:1 matching of column names on the foreign table.
 		 * @param array|null traits - An optional array of traits to apply to this table.
-		*/
+		 */
 		public function removeForeignKeyByDefinition ( $near_columns, $far_table, $far_columns, $traits = null ) {
 			$key = new Kohana_Migration_Key_Foreign($near_columns, $far_table, $far_columns, $traits);
 			$this->_removeForeignKeys[] = $key->getName();
@@ -95,7 +95,7 @@
 		 * @see Kohana_Migration_Index
 		 * @param array columns - An array of columns to put the inex on.
 		 * @param array|null traits - An optional array of traits for the index.
-		*/
+		 */
 		public function addIndex ( $columns, $traits = null ) {
 			$index = new Kohana_Migration_Index($columns, $traits);
 			$this->_addIndexes[$index->getName()] = $index;
@@ -115,7 +115,7 @@
 		 * @see Kohana_Migration_Index
 		 * @param array columns - An array of columns to put the index on.
 		 * @param array|null traits - An optional array of traits for the index.
-		*/
+		 */
 		public function removeIndexByDefinition( $columns, $traits = null ) {
 			$index = new Kohana_Migration_Index($columns, $traits);
 			$this->_removeIndexes[] = $index->getName();
@@ -127,7 +127,7 @@
 		 * @param string type - The type of column to add.
 		 * @param string name - The name of the new column.
 		 * @param array|null traits - An optional array of traits for this column.
-		*/
+		 */
 		public function addColumn ( $type, $name, $traits = null ) {
 			$this->_addColumns[$name] = new Kohana_Migration_Column( $name, $type, $traits );
 		}
@@ -147,7 +147,7 @@
 		 * @param string type - The type of the column.
 		 * @param array|null traits - An optional array of traits for this column.
 		 * @param string|null new_name - An optional new name for this column.
-		*/
+		 */
 		public function alterColumn ( $name, $type, $traits = null, $new_name = null ) {
 			if( is_null( $new_name ) or $name == $new_name ) {
 				$this->_modifyColumns[$name] =  new Kohana_Migration_Column( $name, $type, $traits );
@@ -160,7 +160,7 @@
 		/**
 		 * Rename a table
 		 * @param string name - New name for table
-		*/
+		 */
 		public function renameTo( $name ) {
 			$this->_renameTo = $name;
 		}

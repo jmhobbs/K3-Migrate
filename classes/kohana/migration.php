@@ -2,6 +2,9 @@
 
 	abstract class Kohana_Migration {
 
+		/**
+		 * @var Kohana_Migration_Statement[]
+		 */
 		protected static $statements = array();
 
 		/**

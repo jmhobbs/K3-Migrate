@@ -39,7 +39,7 @@
 		/**
 		 * Possible actions to take on update or delete.
 		 * @see $_traits
-		*/
+		 */
 		protected $referentialActions = array(
 			'CASCADE',
 			'SET NULL',
@@ -53,7 +53,7 @@
 		 * @param array far_columns - An array with a 1:1 matching of column names on the foreign table.
 		 * @param array|null traits - An optional array of traits to apply to this table.
 		 * @see $_traits
-		*/
+		 */
 		public function __construct ( $near_columns, $far_table, $far_columns, $traits = null ) {
 			$this->_near_columns = $near_columns;
 			$this->_far_columns = $far_columns;
