@@ -104,7 +104,7 @@
 		 * @param array|null $args - Optional arguments array for table creation
 		 * @return Kohana_Migration_Statement_CreateTable
 		 */
-		public static function &CreateTable ( $name, $args = null ) {
+		public static function CreateTable ( $name, $args = null ) {
 			return self::addStatement( new Kohana_Migration_Statement_CreateTable( $name, $args ) );
 		}
 
@@ -114,7 +114,7 @@
 		 * @param string $name - The name of the table
 		 * @return Kohana_Migration_Statement_ChangeTable
 		 */
-		public static function &ChangeTable ( $name ) {
+		public static function ChangeTable ( $name ) {
 			return self::addStatement( new Kohana_Migration_Statement_ChangeTable( $name ) );
 		}
 
@@ -124,7 +124,7 @@
 		 * @param $name - The name of the table.
 		 * @return Kohana_Migration_Statement_ChangeTable
 		 */
-		public static function &AlterTable ( $name ) {
+		public static function AlterTable ( $name ) {
 			return self::ChangeTable( $name );
 		}
 
@@ -134,7 +134,7 @@
 		 * @param $name - The name of the table
 		 * @return Kohana_Migration_Statement_DropTable
 		 */
-		public static function &DropTable ( $name ) {
+		public static function DropTable ( $name ) {
 			return self::addStatement( new Kohana_Migration_Statement_DropTable( $name ) );
 		}
 
