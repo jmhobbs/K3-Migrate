@@ -11,16 +11,16 @@
 		protected $_keys = array();
 		protected $_primaryKey = null;
 
-		/*!
-			Default options for creating the table.
-			
-			\param id  If string, it creates a integer, auto-increment column. If false, it does not.
-			\param created If string, create a timestamp created column. If false, it does not.
-			\param modified If string, it creates a timestamp modified column. If false, it does not.
-			\param primary_key If string or array, it is the column name(s) of the primary key. If true, it is the id column. If false there is no Primary Key.
-			\param engine The engine to use.
-			\param charset The charset to use.
-		*/
+		/**
+		 * Default options for creating the table.
+		 * @var array
+		 * id - If string, it creates a integer, auto-increment column. If false, it does not.
+		 * created - If string, create a timestamp created column. If false, it does not.
+		 * modified - If string, it creates a timestamp modified column. If false, it does not.
+		 * primary_key - If string or array, it is the column name(s) of the primary key. If true, it is the id column. If false there is no Primary Key.
+		 * engine - The engine to use.
+		 * charset - The charset to use.
+		 */
 		protected $_default_options = array(
 			'id'          => 'id',
 			'created'     => 'created',
@@ -30,19 +30,20 @@
 			'charset'     => 'utf8',
 		);
 
-		/*!
-			Create a new table.
-
-			\param name The name of the table.
-			\param args An optional array of options for the table.
-
-			\sa $_default_options
-		*/
+		/**
+		 * Create a new table.
+		 * @see $_default_options
+		 * @param string $name - The name of the table.
+		 * @param array|null $args - An optional array of options for the table.
+		 */
 		public function __construct ( $name, $args = null ) {
 			$this->_tableName = $name;
 
-			if( is_array( $args ) ) { $args = array_merge( $this->_default_options, $args ); }
-			else { $args = $this->_default_options; }
+			if( is_array( $args ) ) {
+				$args = array_merge( $this->_default_options, $args ); }
+			else {
+				$args = $this->_default_options;
+			}
 
 			if( false !== $args['id'] ) {
 				$this->addColumn( 'integer', $args['id'], array( 'size' => 11, 'null' => false, 'unsigned' => true, 'auto_increment' => true ) );
@@ -67,6 +68,10 @@
 			$this->charset( $args['charset'] );
 		}
 
+		/**
+		 * Generate SQL statement
+		 * @return string
+		 */
 		public function toSQL () {
 			$sql = "CREATE TABLE `{$this->_tableName}` (\n\t";
 
@@ -98,83 +103,68 @@
 			return $sql;
 		}
 
-		/*!
-			Set the engine for this table.
-
-			\param engine The string name of the engine to use.
-		*/
+		/**
+		 * Set the engine for this table.
+		 * @param string $engine - The name of the engine to use.
+		 */
 		public function engine ( $engine ) { $this->_engine = $engine; }
 
-		/*!
-			Set the charset for this table.
-
-			\param charset The string name of the charset to use.
-		*/
+		/**
+		 * Set the charset for this table.
+		 * @param string $charset - The name of the charset to use.
+		 */
 		public function charset ( $charset ) { $this->_charset = $charset; }
 
-		/*!
-			Set the primary key for this table.
-
-			\param columnName The string or array of column name(s) for the primary key.
-		*/
+		/**
+		 * Set the primary key for this table.
+		 * @param string|array $columnName - The column name(s) for the primary key.
+		 */
 		public function primaryKey ( $columnName ) { $this->_primaryKey = $columnName; }
 
-		/*!
-			Set the name of this table.
-
-			\param tableName The name for the table.
-		*/
+		/**
+		 * Set the name of this table.
+		 * @param string $tableName - The name for the table.
+		 */
 		public function tableName ( $tableName ) { $this->_tableName = $tableName; }
 
-		/*!
-			Add a column to this table.
-
-			\param type The type of column to add.
-			\param name The name of the new column.
-			\param traits An optional array of traits for this column.
-
-			\sa Kohana_Migration_Column::$_traits
-		*/
+		/**
+		 * Add a column to this table.
+		 * @param string $type - The type of column to add.
+		 * @param string $name - The name of the new column.
+		 * @param array|null $traits - An optional array of traits for this column.
+		 */
 		public function addColumn ( $type, $name, $traits = null ) {
 			$this->_columns[$name] = new Kohana_Migration_Column( $name, $type, $traits );
 		}
 
-		/*!
-			Add an index to this table.
-
-			\param columns An array of columns to put the inex on.
-			\param traits An optional array of traits for the index.
-
-			\sa Kohana_Migration_Index
-		*/
+		/**
+		 * Add an index to this table.
+		 * @param array $columns - An array of columns to put the index on.
+		 * @param array|null $traits - An optional array of traits for the index.
+		 */
 		public function addIndex ( $columns, $traits = null ) {
 			$index = new Kohana_Migration_Index($columns, $traits);
 			$this->_indexes[$index->getName()] = $index;
 		}
 
-		/*!
-			Add a key to this table.
-
-			\param columns An array of columns to put the key on.
-			\param traits An optional array of traits for the key.
-
-			\sa Kohana_Migration_Key
-		*/
+		/**
+		 * Add a key to this table.
+		 * @param array $columns - An array of columns to put the key on.
+		 * @param array|null $traits - An optional array of traits for the key.
+		 */
 		public function addKey ( $columns, $traits = null ) {
 			$key = new Kohana_Migration_Key($columns, $traits);
 			$this->_keys[$key->getName()] = $key;
 		}
 
-		/*!
-			Add a foreign key to this table.
-
-			\param near_columns An array of columns in the near table to match to foreign columns.
-			\param far_table The name of the foreign table.
-			\param far_columns An array with a 1:1 matching of column names on the foreign table.
-			\param traits An optional array of traits to apply to this table.
-
-			\sa Kohana_Migration_Key_Foreign::$_traits
-		*/
+		/**
+		 * Add a foreign key to this table.
+		 * @see Kohana_Migration_Key_Foreign::$_traits
+		 * @param array $near_columns - An array of columns in the near table to match to foreign columns.
+		 * @param string $far_table - The name of the foreign table.
+		 * @param $far_columns - An array with a 1:1 matching of column names on the foreign table.
+		 * @param array|null $traits - An optional array of traits to apply to this table.
+		 */
 		public function addForeignKey ( $near_columns, $far_table, $far_columns, $traits = null ) {
 			$key = new Kohana_Migration_Key_Foreign($near_columns, $far_table, $far_columns, $traits);
 			$this->_keys[$key->getName()] = $key;
