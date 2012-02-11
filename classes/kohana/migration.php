@@ -139,6 +139,16 @@
 		}
 
 		/**
+		 * Add a raw SQL to the statement queue.
+		 * @static
+		 * @param string $sql
+		 * @return Kohana_Migration_Statement_RawSql
+		 */
+		public static function AddRawSQL ( $sql ) {
+			return self::addStatement( new Kohana_Migration_Statement_RawSql( $sql ) );
+		}
+
+		/**
 		 * @static
 		 * @param Kohana_Migration_Statement $statement
 		 * @return Kohana_Migration_Statement
