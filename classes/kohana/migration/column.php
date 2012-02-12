@@ -150,7 +150,7 @@
 							$this->comment = $trait;
 							break;
 						case 'choices':
-							$this->choices[$key] = $trait;
+							$this->choices = $trait;
 							break;
 						default:
 							$this->traits[$key] = $trait;
@@ -164,15 +164,15 @@
 
 			$chunks = array(
 				"`{$this->name}`",
-				vsprintf( self::$types[$this->type]['type'], $this->size )
+				sprintf( self::$types[$this->type]['type'], $this->size )
 			);
 			
 			// ENUM
 			$chunks_choice = array();
 
 			if( count($this->choices) > 0 ) {
-				foreach($this->choices['choices'] as $key => $value) {
-					$chunks_choice[] = "'".$value."'";
+				foreach( $this->choices as $value ) {
+					$chunks_choice[] = "'".addslashes($value)."'";
 				}
 				$chunks[] = '(' . implode( ',', $chunks_choice ) . ')';
 			}
