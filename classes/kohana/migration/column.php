@@ -161,7 +161,7 @@
 
 			$chunks = array(
 				"`{$this->name}`",
-				sprintf( self::$types[$this->type]['type'], $this->size )
+				vsprintf( self::$types[$this->type]['type'], (array) $this->size )
 			);
 			
 			// ENUM
