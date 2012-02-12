@@ -2,10 +2,25 @@
 
 	class Kohana_Migration_Statement_ChangeTable extends Kohana_Migration_Statement {
 
+		/**
+		 * @var string
+		 */
 		protected $_tableName;
+		/**
+		 * @var string
+		 */
 		protected $_engine;
+		/**
+		 * @var string
+		 */
 		protected $_charset;
+		/**
+		 * @var Kohana_Migration_Column[]
+		 */
 		protected $_addColumns = array();
+		/**
+		 * @var string[]
+		 */
 		protected $_removeColumns = array();
 		// Change == Rename
 		protected $_changeColumns = array();
