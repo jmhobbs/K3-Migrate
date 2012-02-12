@@ -42,10 +42,7 @@
 				'null' => true,
 				'default' => null,
 				'comment' => null,
-				'traits' => array(
-					'unsigned'       => 'UNSIGNED',
-					'auto_increment' => 'AUTO_INCREMENT',
-				),
+				'traits' => array(),
 				'choices' => array(),
 				'default_traits' => array()
 			),
