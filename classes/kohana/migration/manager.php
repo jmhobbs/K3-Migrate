@@ -23,58 +23,58 @@
 			$files = scandir( $this->config->path );
 			return array_map(
 				'Migration_Manager::fileNameToMigrationName',
-                                array_filter(
-                                        $files,
-                                        'Migration_Manager::isMigrationFile'
-                                )
+				array_filter(
+					$files,
+					'Migration_Manager::isMigrationFile'
+				)
 			);
 		}
-                
-                public function enumerateUpMigrations () {
+
+		public function enumerateUpMigrations () {
 			$files = scandir( $this->config->path );
-                        
-                        /* Need for closure use */
-                        $self = $this;
-                        
+
+			/* Need for closure use */
+			$self = $this;
+
 			return array_map(
 				'Migration_Manager::fileNameToMigrationName',
-                                array_filter(
-                                    array_filter(
-                                            $files,
-                                            'Migration_Manager::isMigrationFile'
-                                    ),
-                                    function($file) use($self) {
-                                        if (Migration_Manager::migrationNameToVersion($file) > $self->getSchemaVersion())
-                                            return TRUE;
-                                        
-                                        return FALSE;
-                                    }
-                                )
+				array_filter(
+					array_filter(
+							$files,
+							'Migration_Manager::isMigrationFile'
+					),
+					function($file) use($self) {
+						if (Migration_Manager::migrationNameToVersion($file) > $self->getSchemaVersion())
+							return TRUE;
+
+						return FALSE;
+					}
+				)
 			);
 		}
-                
-                public function enumerateDownMigrations () {
-			$files = scandir( $this->config->path );
-                        
-                        /* Need for closure use */
-                        $self = $this;
-                        
-			return array_reverse(
-                                array_map(
-                                    'Migration_Manager::fileNameToMigrationName',
-                                    array_filter(
-                                        array_filter(
-                                                $files,
-                                                'Migration_Manager::isMigrationFile'
-                                        ),
-                                        function($file) use($self) {
-                                            if (Migration_Manager::migrationNameToVersion($file) <= $self->getSchemaVersion())
-                                                return TRUE;
 
-                                            return FALSE;
-                                        }
-                                    )
-                                )
+		public function enumerateDownMigrations () {
+			$files = scandir( $this->config->path );
+
+			/* Need for closure use */
+			$self = $this;
+
+			return array_reverse(
+				array_map(
+					'Migration_Manager::fileNameToMigrationName',
+					array_filter(
+						array_filter(
+							$files,
+							'Migration_Manager::isMigrationFile'
+						),
+						function($file) use($self) {
+							if (Migration_Manager::migrationNameToVersion($file) <= $self->getSchemaVersion())
+								return TRUE;
+
+							return FALSE;
+						}
+					)
+				)
 			);
 		}
 
@@ -128,7 +128,7 @@
 			$this->getMigrationClass( $name )->migrateDown( Database::instance( $this->database ) );
 			// TODO: Need to set schema to PREVIOUS migration, not this one!
 			//$this->setSchemaVersion( self::migrationNameToVersion( $name ) );
-                        
+
 			/*
 			 * PREVIOUS Version without tracked,
 			 * temporary quick and dirty answer
@@ -137,12 +137,12 @@
 
 			/* Need for closure use */
 			$self = $this;
-                        
+
 			$migrations =  array_reverse(
 				array_filter(
 					array_filter(
-							$files,
-							'Migration_Manager::isMigrationFile'
+						$files,
+						'Migration_Manager::isMigrationFile'
 					),
 					function($file) use($self) {
 						if (Migration_Manager::migrationNameToVersion($file) < $self->getSchemaVersion())

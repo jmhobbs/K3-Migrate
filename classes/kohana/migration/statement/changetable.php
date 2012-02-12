@@ -26,6 +26,9 @@
 		protected $_changeColumns = array();
 		// Modify == Change Definition
 		protected $_modifyColumns = array();
+		/**
+		 * @var Kohana_Migration_Index[]
+		 */
 		protected $_addIndexes = array();
 		protected $_addKeys = array();
 		protected $_removeIndexes = array();
