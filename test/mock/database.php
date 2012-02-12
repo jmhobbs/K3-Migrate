@@ -1,8 +1,8 @@
 <?php
 
-	/*!
-		Mock object to emulate key parts of http://kohanaframework.org/3.1/guide/api/Database
-		for testing and examples.
+	/**
+	 * Mock object to emulate key parts of http://kohanaframework.org/3.1/guide/api/Database
+	 * for testing and examples.
 	*/
 	class Mock_Database {
 

@@ -37,18 +37,15 @@
 				'default_traits' => array()
 			),
 			'enum' => array(
-		                'type' => 'ENUM',
-		                'size' => null,
-		                'null' => true,
-		                'default' => null,
-		                'comment' => null,
-		                'traits' => array(
-		                    'unsigned'       => 'UNSIGNED',
-		                    'auto_increment' => 'AUTO_INCREMENT',
-		                ),
-		                'choices' => array(),
-		                'default_traits' => array()
-            		),
+				'type' => 'ENUM',
+				'size' => null,
+				'null' => true,
+				'default' => null,
+				'comment' => null,
+				'traits' => array(),
+				'choices' => array(),
+				'default_traits' => array()
+			),
 			// TODO: http://www.ispirer.com/doc/sqlways39/Output/SQLWays-1-211.html
 			'text' => array(
 				'type' => 'TEXT',
@@ -150,8 +147,8 @@
 							$this->comment = $trait;
 							break;
 						case 'choices':
-                            				$this->choices[$key] = $trait;
-                            			break;
+							$this->choices = $trait;
+							break;
 						default:
 							$this->traits[$key] = $trait;
 							break;
@@ -164,17 +161,18 @@
 
 			$chunks = array(
 				"`{$this->name}`",
-				vsprintf( self::$types[$this->type]['type'], $this->size )
+				vsprintf( self::$types[$this->type]['type'], (array) $this->size )
 			);
 			
 			// ENUM
 			$chunks_choice = array();
-		        if( count($this->choices) > 0 ) {
-		        	foreach($this->choices['choices'] as $key => $value) {
-		                	$chunks_choice[] = "'".$value."'";
-		                }
-		                $chunks[] = '(' . implode( ',', $chunks_choice ) . ')';
-		        }
+
+			if( count($this->choices) > 0 ) {
+				foreach( $this->choices as $value ) {
+					$chunks_choice[] = "'".addslashes($value)."'";
+				}
+				$chunks[] = '(' . implode( ',', $chunks_choice ) . ')';
+			}
 
 			$requested_traits = array_merge( self::$types[$this->type]['default_traits'], $this->traits );
 			foreach( $requested_traits as $key => $trait ) {
