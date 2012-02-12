@@ -81,14 +81,17 @@
 		public function action_print () {
 			$target = $this->request->param('id');
 
-			foreach( $this->runner->enumerateMigrations() as $migration ) {
-				print "======[ $migration ]======\n";
+			$performed = 0;
+			foreach( $this->runner->enumerateMigrationsReverse() as $migration ) {
+				print "======[ $migration ]======\n\n";
 				print "===[ UP ]===\n";
-				print $this->runner->getMigrationUp( $migration );
+				print $this->runner->getMigrationClass( $migration )->queryUp();
 				print "\n";
 				print "==[ DOWN ]==\n";
-				print $this->runner->getMigrationDown( $migration );
+				print $this->runner->getMigrationClass( $migration )->queryDown();
 				print "\n";
+
+				if ($target > 0 && $target == ++$performed) break;
 			}
 		}
 

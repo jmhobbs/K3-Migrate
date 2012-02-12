@@ -31,6 +31,10 @@
 			);
 		}
 
+		public function enumerateMigrationsReverse () {
+			return array_reverse( $this->enumerateMigrations() );
+		}
+
 		public function enumerateUpMigrations () {
 			$current = $this->getSchemaVersion();
 
