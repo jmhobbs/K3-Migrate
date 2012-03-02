@@ -229,7 +229,7 @@
 				$alters[] = 'ADD ' . $index->toSQL();
 			}
 			foreach( $this->_removeIndexes as $name) {
-				$alters[] = 'DROP ' . $name;
+				$alters[] = 'DROP INDEX ' . $name;
 			}
 			foreach( $this->_addKeys as $name => $index ) {
 				$alters[] = 'ADD ' . $index->toSQL();
