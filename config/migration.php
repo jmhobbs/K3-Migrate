@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct access allowed.');
 
-	return array(
-		'path' => APPPATH.'migrations',
-		'database' => 'default',
-	);
+return array(
+	'path' => APPPATH.'migrations',
+	'database' => 'default',
+);
