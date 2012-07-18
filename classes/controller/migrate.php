@@ -60,6 +60,8 @@ class Controller_Migrate extends Controller {
 
 	public function action_up()
 	{
+		if ($this->check_head()) return;
+
 		$target = $this->request->param('id');
 
 		$performed = 0;
@@ -76,6 +78,8 @@ class Controller_Migrate extends Controller {
 
 	public function action_down()
 	{
+		if ($this->check_head()) return;
+
 		$target = $this->request->param('id');
 
 		if ($target)
@@ -137,6 +141,8 @@ class Controller_Migrate extends Controller {
 
 	public function action_print()
 	{
+		if ($this->check_head()) return;
+
 		$target = $this->request->param('id');
 
 		$performed = 0;
@@ -169,5 +175,16 @@ class Controller_Migrate extends Controller {
 		}
 		$file_name = $this->runner->create($class_name);
 		print "Created migration `$class_name` in file `".$file_name."`\n";
+	}
+
+	protected function check_head()
+	{
+		if (in_array($this->runner->getSchemaVersion(), $this->runner->getOrphansMigrations()))
+		{
+			print "\nCurrent version isn't exist\n\n";
+			return true;
+		}
+
+		return false;
 	}
 }
