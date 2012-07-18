@@ -67,20 +67,22 @@ class Controller_Migrate extends Controller {
 	{
 		$target = $this->request->param('id');
 
-		if (!$target)
+		if ($target)
 		{
-			die("You should to specify step.\n\n");
+			$performed = 0;
+			foreach ($this->runner->enumerateDownMigrations() as $migration)
+			{
+				print "==[ $migration ]==\n";
+				$this->runner->runMigrationDown($migration);
+				print "\n";
+
+				if ($target > 0 && $target == ++$performed)
+					break;
+			}
 		}
-
-		$performed = 0;
-		foreach ($this->runner->enumerateDownMigrations() as $migration)
+		else
 		{
-			print "==[ $migration ]==\n";
-			$this->runner->runMigrationDown($migration);
-			print "\n";
-
-			if ($target > 0 && $target == ++$performed)
-				break;
+			print "You should to specify step.\n";
 		}
 	}
 
