@@ -7,6 +7,9 @@ class Kohana_Migration_Manager {
 	protected $config = null;
 	protected $database = null;
 
+	protected $appliedMigrations = array();
+	protected $existsMigrations = array();
+
 	public function __construct($config)
 	{
 		if ( ! is_dir($config->path))
@@ -24,19 +27,14 @@ class Kohana_Migration_Manager {
 		{
 			$this->database = $this->config->database;
 		}
-	}
+
+        $this->loadAppliedMigrations();
+        $this->loadExistsMigrations();
+    }
 
 	public function enumerateMigrations()
 	{
-		$files = scandir($this->config->path);
-
-		return array_map(
-			'Migration_Manager::fileNameToMigrationName',
-			array_filter(
-				$files,
-				'Migration_Manager::isMigrationFile'
-			)
-		);
+		return $this->existsMigrations;
 	}
 
 	public function enumerateMigrationsReverse()
@@ -74,16 +72,30 @@ class Kohana_Migration_Manager {
 
 	public function getAppliedVersions()
 	{
-		$version_file = $this->getSchemaVersionFileName();
+		return $this->appliedMigrations;
+	}
 
-		$versions = array();
+	protected function loadAppliedMigrations()
+	{
+		$version_file = $this->getSchemaVersionFileName();
 
 		if (file_exists($version_file))
 		{
-			$versions = file($version_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+			$this->appliedMigrations = file($version_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		}
+	}
 
-		return $versions;
+	protected function loadExistsMigrations()
+	{
+		$files = scandir($this->config->path);
+
+		$this->existsMigrations = array_map(
+			'Migration_Manager::fileNameToMigrationName',
+			array_filter(
+				$files,
+				'Migration_Manager::isMigrationFile'
+			)
+		);
 	}
 
 	public function getSchemaVersion()
