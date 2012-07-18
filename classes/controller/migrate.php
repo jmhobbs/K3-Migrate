@@ -26,6 +26,7 @@ class Controller_Migrate extends Controller {
 
 	public function action_index()
 	{
+		$applied_versions = $this->runner->getAppliedVersions();
 		$current_version = $this->runner->getSchemaVersion();
 		if (empty($current_version))
 		{
@@ -37,15 +38,12 @@ class Controller_Migrate extends Controller {
 
 		foreach ($migrations as $migration)
 		{
-			if ($this->runner->migrationNameToVersion($migration) == $current_version)
-			{
-				print " You Are Here =>  ";
-			}
-			else
-			{
-				print "                  ";
-			}
-			print "$migration\n";
+			$version = $this->runner->migrationNameToVersion($migration);
+			printf("  (%s)  %s  %s\n",
+				in_array($version, $applied_versions) ? '*' : ' ',
+				$version == $current_version ? '=>' : '  ',
+				$migration
+			);
 		}
 	}
 
