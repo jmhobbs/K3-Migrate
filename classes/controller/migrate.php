@@ -32,9 +32,10 @@ class Controller_Migrate extends Controller {
 			print " You have not performed any migrations yet!\n\n";
 		}
 
-		print " Total Migrations: ".count($this->runner->enumerateMigrations())."\n\n";
+		$migrations = $this->runner->enumerateMigrations();
+		print " Total Migrations: ".count($migrations)."\n\n";
 
-		foreach ($this->runner->enumerateMigrations() as $migration)
+		foreach ($migrations as $migration)
 		{
 			if ($this->runner->migrationNameToVersion($migration) == $current_version)
 			{

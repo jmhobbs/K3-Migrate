@@ -72,18 +72,25 @@ class Kohana_Migration_Manager {
 		);
 	}
 
-	public function getSchemaVersion()
+	public function getAppliedVersions()
 	{
 		$version_file = $this->getSchemaVersionFileName();
 
-		$version = 0;
+		$versions = array();
 
 		if (file_exists($version_file))
 		{
-			$version = file_get_contents($version_file);
+			$versions = file($version_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		}
 
-		return $version;
+		return $versions;
+	}
+
+	public function getSchemaVersion()
+	{
+		$versions = $this->getAppliedVersions();
+
+		return count($versions) ? end($versions) : 0;
 	}
 
 	public function setSchemaVersion($version)
