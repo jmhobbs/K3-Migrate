@@ -45,12 +45,14 @@ class Kohana_Migration_Manager {
 	public function enumerateUpMigrations()
 	{
 		$current = $this->getSchemaVersion();
+		$applied = $this->getAppliedVersions();
 
 		return array_filter(
 			$this->enumerateMigrations(),
-			function ($file) use ($current)
+			function ($file) use ($current, $applied)
 			{
-				return Migration_Manager::migrationNameToVersion($file) > $current;
+				$version = Migration_Manager::migrationNameToVersion($file);
+				return $version > $current && !in_array($version, $applied);
 			}
 		);
 	}
@@ -58,13 +60,15 @@ class Kohana_Migration_Manager {
 	public function enumerateDownMigrations()
 	{
 		$current = $this->getSchemaVersion();
+		$applied = $this->getAppliedVersions();
 
 		return array_reverse(
 			array_filter(
 				$this->enumerateMigrations(),
-				function ($file) use ($current)
+				function ($file) use ($current, $applied)
 				{
-					return Migration_Manager::migrationNameToVersion($file) <= $current;
+					$version = Migration_Manager::migrationNameToVersion($file);
+					return $version <= $current && in_array($version, $applied);
 				}
 			)
 		);
