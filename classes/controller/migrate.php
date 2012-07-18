@@ -104,13 +104,35 @@ class Controller_Migrate extends Controller {
 	{
 		$migrations = $this->runner->enumerateUpMigrations();
 
-		$migration = array_pop($migrations);
+		foreach ($migrations as $migration)
+		{
+			$this->runner->setSchemaVersion(
+				$this->runner->migrationNameToVersion($migration)
+			);
+		}
 
-		print "==[ $migration ]==\n";
+		print "==[ READY ]==\n";
+	}
 
-		$this->runner->setSchemaVersion(
-			$this->runner->migrationNameToVersion($migration)
-		);
+	/**
+	 * Mark all prev migrations as completed
+	 */
+	public function action_upgrade()
+	{
+		$current_version = $this->runner->getSchemaVersion();
+		$migrations = $this->runner->enumerateMigrations();
+
+		foreach ($migrations as $migration)
+		{
+			$version = $this->runner->migrationNameToVersion($migration);
+
+			if ($version < $current_version)
+			{
+				$this->runner->setSchemaVersion($version);
+			}
+		}
+
+		print "==[ READY ]==\n";
 	}
 
 	public function action_print()
