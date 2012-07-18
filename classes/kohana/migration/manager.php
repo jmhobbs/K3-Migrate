@@ -105,11 +105,21 @@ class Kohana_Migration_Manager {
 		return count($versions) ? end($versions) : 0;
 	}
 
-	public function setSchemaVersion($version)
+	public function setSchemaVersion($version, $deleted = false)
 	{
 		$version_file = $this->getSchemaVersionFileName();
 
-		file_put_contents($version_file, $version);
+		if ($deleted)
+		{
+			$this->appliedMigrations = array_diff($this->appliedMigrations, array($version));
+		}
+		else
+		{
+			$this->appliedMigrations[] = $version;
+		}
+		sort($this->appliedMigrations);
+
+		file_put_contents($version_file, implode(PHP_EOL, $this->appliedMigrations));
 	}
 
 	protected function getSchemaVersionFileName()
@@ -126,6 +136,17 @@ class Kohana_Migration_Manager {
 	{
 		$migrations = $this->enumerateMigrations();
 		return self::migrationNameToVersion(end($migrations));
+	}
+
+	public function getOrphansMigrations()
+	{
+		return array_diff(
+			$this->getAppliedVersions(),
+			array_map(
+				'Migration_Manager::migrationNameToVersion',
+				$this->enumerateMigrations()
+			)
+		);
 	}
 
 	/**
@@ -150,17 +171,7 @@ class Kohana_Migration_Manager {
 	public function runMigrationDown($name)
 	{
 		$this->getMigrationClass($name)->migrateDown(Database::instance($this->database));
-		// TODO: Need to set schema to PREVIOUS migration, not this one!
-
-		$migrations = $this->enumerateDownMigrations();
-		$migration = array_shift($migrations); // current
-		$migration = array_shift($migrations); // prev
-
-		$version = $migration === null
-			? 0
-			: Migration_Manager::migrationNameToVersion($migration);
-
-		$this->setSchemaVersion($version);
+		$this->setSchemaVersion(self::migrationNameToVersion($name), true);
 	}
 
 	public function seed()

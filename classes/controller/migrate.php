@@ -45,6 +45,17 @@ class Controller_Migrate extends Controller {
 				$migration
 			);
 		}
+
+		$orphans_migrations = $this->runner->getOrphansMigrations();
+		if (count($orphans_migrations))
+		{
+			print "\nThere are applied migrations, that don't exist any more:\n\n";
+
+			foreach ($orphans_migrations as $orphans_migration)
+			{
+				printf("   !       %s\n", $orphans_migration);
+			}
+		}
 	}
 
 	public function action_up()
