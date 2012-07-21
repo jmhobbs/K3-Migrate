@@ -44,31 +44,29 @@ class Kohana_Migration_Manager {
 
 	public function enumerateUpMigrations()
 	{
-		$current = $this->getSchemaVersion();
 		$applied = $this->getAppliedVersions();
 
 		return array_filter(
 			$this->enumerateMigrations(),
-			function ($file) use ($current, $applied)
+			function ($file) use ($applied)
 			{
 				$version = Migration_Manager::migrationNameToVersion($file);
-				return $version > $current && !in_array($version, $applied);
+				return !in_array($version, $applied);
 			}
 		);
 	}
 
 	public function enumerateDownMigrations()
 	{
-		$current = $this->getSchemaVersion();
 		$applied = $this->getAppliedVersions();
 
 		return array_reverse(
 			array_filter(
 				$this->enumerateMigrations(),
-				function ($file) use ($current, $applied)
+				function ($file) use ($applied)
 				{
 					$version = Migration_Manager::migrationNameToVersion($file);
-					return $version <= $current && in_array($version, $applied);
+					return in_array($version, $applied);
 				}
 			)
 		);
