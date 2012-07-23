@@ -7,6 +7,9 @@ class Kohana_Migration_Manager {
 	protected $config = null;
 	protected $database = null;
 
+	protected $appliedMigrations = array();
+	protected $existsMigrations = array();
+
 	public function __construct($config)
 	{
 		if ( ! is_dir($config->path))
@@ -24,19 +27,14 @@ class Kohana_Migration_Manager {
 		{
 			$this->database = $this->config->database;
 		}
-	}
+
+        $this->loadAppliedMigrations();
+        $this->loadExistsMigrations();
+    }
 
 	public function enumerateMigrations()
 	{
-		$files = scandir($this->config->path);
-
-		return array_map(
-			'Migration_Manager::fileNameToMigrationName',
-			array_filter(
-				$files,
-				'Migration_Manager::isMigrationFile'
-			)
-		);
+		return $this->existsMigrations;
 	}
 
 	public function enumerateMigrationsReverse()
@@ -46,51 +44,84 @@ class Kohana_Migration_Manager {
 
 	public function enumerateUpMigrations()
 	{
-		$current = $this->getSchemaVersion();
+		$applied = $this->getAppliedVersions();
 
 		return array_filter(
 			$this->enumerateMigrations(),
-			function ($file) use ($current)
+			function ($file) use ($applied)
 			{
-				return Migration_Manager::migrationNameToVersion($file) > $current;
+				$version = Migration_Manager::migrationNameToVersion($file);
+				return !in_array($version, $applied);
 			}
 		);
 	}
 
 	public function enumerateDownMigrations()
 	{
-		$current = $this->getSchemaVersion();
+		$applied = $this->getAppliedVersions();
 
 		return array_reverse(
 			array_filter(
 				$this->enumerateMigrations(),
-				function ($file) use ($current)
+				function ($file) use ($applied)
 				{
-					return Migration_Manager::migrationNameToVersion($file) <= $current;
+					$version = Migration_Manager::migrationNameToVersion($file);
+					return in_array($version, $applied);
 				}
+			)
+		);
+	}
+
+	public function getAppliedVersions()
+	{
+		return $this->appliedMigrations;
+	}
+
+	protected function loadAppliedMigrations()
+	{
+		$version_file = $this->getSchemaVersionFileName();
+
+		if (file_exists($version_file))
+		{
+			$this->appliedMigrations = file($version_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		}
+	}
+
+	protected function loadExistsMigrations()
+	{
+		$files = scandir($this->config->path);
+
+		$this->existsMigrations = array_map(
+			'Migration_Manager::fileNameToMigrationName',
+			array_filter(
+				$files,
+				'Migration_Manager::isMigrationFile'
 			)
 		);
 	}
 
 	public function getSchemaVersion()
 	{
-		$version_file = $this->getSchemaVersionFileName();
+		$versions = $this->getAppliedVersions();
 
-		$version = 0;
-
-		if (file_exists($version_file))
-		{
-			$version = file_get_contents($version_file);
-		}
-
-		return $version;
+		return count($versions) ? end($versions) : 0;
 	}
 
-	public function setSchemaVersion($version)
+	public function setSchemaVersion($version, $deleted = false)
 	{
 		$version_file = $this->getSchemaVersionFileName();
 
-		file_put_contents($version_file, $version);
+		if ($deleted)
+		{
+			$this->appliedMigrations = array_diff($this->appliedMigrations, array($version));
+		}
+		else
+		{
+			$this->appliedMigrations[] = $version;
+		}
+		sort($this->appliedMigrations);
+
+		file_put_contents($version_file, implode(PHP_EOL, $this->appliedMigrations));
 	}
 
 	protected function getSchemaVersionFileName()
@@ -107,6 +138,17 @@ class Kohana_Migration_Manager {
 	{
 		$migrations = $this->enumerateMigrations();
 		return self::migrationNameToVersion(end($migrations));
+	}
+
+	public function getOrphansMigrations()
+	{
+		return array_diff(
+			$this->getAppliedVersions(),
+			array_map(
+				'Migration_Manager::migrationNameToVersion',
+				$this->enumerateMigrations()
+			)
+		);
 	}
 
 	/**
@@ -131,17 +173,7 @@ class Kohana_Migration_Manager {
 	public function runMigrationDown($name)
 	{
 		$this->getMigrationClass($name)->migrateDown(Database::instance($this->database));
-		// TODO: Need to set schema to PREVIOUS migration, not this one!
-
-		$migrations = $this->enumerateDownMigrations();
-		$migration = array_shift($migrations); // current
-		$migration = array_shift($migrations); // prev
-
-		$version = $migration === null
-			? 0
-			: Migration_Manager::migrationNameToVersion($migration);
-
-		$this->setSchemaVersion($version);
+		$this->setSchemaVersion(self::migrationNameToVersion($name), true);
 	}
 
 	public function seed()

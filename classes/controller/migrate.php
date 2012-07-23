@@ -26,30 +26,41 @@ class Controller_Migrate extends Controller {
 
 	public function action_index()
 	{
-		$current_version = $this->runner->getSchemaVersion();
-		if (empty($current_version))
+		$applied_versions = $this->runner->getAppliedVersions();
+
+		if (empty($applied_versions))
 		{
 			print " You have not performed any migrations yet!\n\n";
 		}
 
-		print " Total Migrations: ".count($this->runner->enumerateMigrations())."\n\n";
+		$migrations = $this->runner->enumerateMigrations();
+		print " Total Migrations: ".count($migrations)."\n\n";
 
-		foreach ($this->runner->enumerateMigrations() as $migration)
+		foreach ($migrations as $migration)
 		{
-			if ($this->runner->migrationNameToVersion($migration) == $current_version)
+			$version = $this->runner->migrationNameToVersion($migration);
+			printf("  (%s)    %s\n",
+				in_array($version, $applied_versions) ? '*' : ' ',
+				$migration
+			);
+		}
+
+		$orphans_migrations = $this->runner->getOrphansMigrations();
+		if (count($orphans_migrations))
+		{
+			print "\nThere are applied migrations, that don't exist any more:\n\n";
+
+			foreach ($orphans_migrations as $orphans_migration)
 			{
-				print " You Are Here =>  ";
+				printf("   !     %s\n", $orphans_migration);
 			}
-			else
-			{
-				print "                  ";
-			}
-			print "$migration\n";
 		}
 	}
 
 	public function action_up()
 	{
+		if ($this->check_head()) return;
+
 		$target = $this->request->param('id');
 
 		$performed = 0;
@@ -66,17 +77,26 @@ class Controller_Migrate extends Controller {
 
 	public function action_down()
 	{
+		if ($this->check_head()) return;
+
 		$target = $this->request->param('id');
 
-		$performed = 0;
-		foreach ($this->runner->enumerateDownMigrations() as $migration)
+		if ($target)
 		{
-			print "==[ $migration ]==\n";
-			$this->runner->runMigrationDown($migration);
-			print "\n";
+			$performed = 0;
+			foreach ($this->runner->enumerateDownMigrations() as $migration)
+			{
+				print "==[ $migration ]==\n";
+				$this->runner->runMigrationDown($migration);
+				print "\n";
 
-			if ($target > 0 && $target == ++$performed)
-				break;
+				if ($target > 0 && $target == ++$performed)
+					break;
+			}
+		}
+		else
+		{
+			print "You should to specify step.\n";
 		}
 	}
 
@@ -87,17 +107,41 @@ class Controller_Migrate extends Controller {
 	{
 		$migrations = $this->runner->enumerateUpMigrations();
 
-		$migration = array_pop($migrations);
+		foreach ($migrations as $migration)
+		{
+			$this->runner->setSchemaVersion(
+				$this->runner->migrationNameToVersion($migration)
+			);
+		}
 
-		print "==[ $migration ]==\n";
+		print "==[ READY ]==\n";
+	}
 
-		$this->runner->setSchemaVersion(
-			$this->runner->migrationNameToVersion($migration)
-		);
+	/**
+	 * Mark all prev migrations as completed
+	 */
+	public function action_upgrade()
+	{
+		$current_version = $this->runner->getSchemaVersion();
+		$migrations = $this->runner->enumerateMigrations();
+
+		foreach ($migrations as $migration)
+		{
+			$version = $this->runner->migrationNameToVersion($migration);
+
+			if ($version < $current_version)
+			{
+				$this->runner->setSchemaVersion($version);
+			}
+		}
+
+		print "==[ READY ]==\n";
 	}
 
 	public function action_print()
 	{
+		if ($this->check_head()) return;
+
 		$target = $this->request->param('id');
 
 		$performed = 0;
@@ -130,5 +174,16 @@ class Controller_Migrate extends Controller {
 		}
 		$file_name = $this->runner->create($class_name);
 		print "Created migration `$class_name` in file `".$file_name."`\n";
+	}
+
+	protected function check_head()
+	{
+		if (in_array($this->runner->getSchemaVersion(), $this->runner->getOrphansMigrations()))
+		{
+			print "\nCurrent version isn't exist\n\n";
+			return true;
+		}
+
+		return false;
 	}
 }
